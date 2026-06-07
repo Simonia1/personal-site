@@ -469,14 +469,6 @@ function addComment(){
 }
 render();
 
-// Only show panel on poetry
-var panel = document.getElementById('comment-panel');
-panel.style.display = 'none';
-var _origSwitch2 = switchSection;
-switchSection = function(name){
-  _origSwitch2(name);
-  panel.style.display = (name === 'poetry') ? 'block' : 'none';
-};
 </script>
 
 
@@ -492,6 +484,16 @@ switchSection = function(name){
 </aside>
 
 <script>
+(function(){
+  var p = document.getElementById('comment-panel');
+  if(!p) return;
+  p.style.display = 'none';
+  var orig = switchSection;
+  switchSection = function(name){
+    orig(name);
+    p.style.display = (name === 'poetry') ? 'block' : 'none';
+  };
+})();
 </script>
 
 </body>
