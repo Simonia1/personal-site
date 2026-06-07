@@ -404,7 +404,15 @@ function switchSection(name){
 
   // Show comment panel only on poetry
   var panel = document.getElementById('comment-panel');
-  if(panel) panel.style.display = (name === 'poetry') ? 'flex' : 'none';
+  if(panel){
+    if(name === 'poetry'){
+      panel.style.opacity = '1';
+      panel.style.pointerEvents = 'auto';
+    } else {
+      panel.style.opacity = '0';
+      panel.style.pointerEvents = 'none';
+    }
+  }
 
   if(window.innerWidth <= 768){
     document.querySelector('.main').scrollIntoView({behavior:'smooth'});
@@ -421,7 +429,7 @@ function togglePoem(el){
 
 
 <!-- Comment Panel -->
-<aside class="comment-panel" id="comment-panel" style="display:none;">
+<aside class="comment-panel" id="comment-panel" style="pointer-events:none;opacity:0;">
   <h3>诗 歌 推 荐</h3>
   <div class="cp-intro">读到好的，请留在这里。</div>
   <div id="cusdis_thread"
