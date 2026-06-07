@@ -181,6 +181,9 @@ body{
   z-index:5;
   overflow-y:auto;
   font-family:"Noto Serif SC",Georgia,serif;
+  transform:translateX(100%);
+  transition:transform 0.3s ease;
+  pointer-events:none;
 }
 .comment-panel h3{
   font-size:0.85rem;font-weight:600;
@@ -440,11 +443,12 @@ function togglePoem(el){
 </aside>
 
 <script>
-// Show/hide panel
+// Show/hide panel (use transform, not display:none, so Cusdis iframe initializes)
 function updatePanel(name){
-  document.getElementById('comment-panel').style.display = (name === 'poetry') ? 'block' : 'none';
+  var p = document.getElementById('comment-panel');
+  p.style.transform = (name === 'poetry') ? 'translateX(0)' : 'translateX(100%)';
+  p.style.pointerEvents = (name === 'poetry') ? 'auto' : 'none';
 }
-document.getElementById('comment-panel').style.display = 'none';
 
 var _origSwitch = switchSection;
 switchSection = function(name){
