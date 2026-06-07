@@ -439,35 +439,54 @@ function togglePoem(el){
   content.classList.toggle('open');
 }
 
-// Comment system (localStorage)
-var COMMENT_KEY = 'simon_poems';
-function ls(){try{return JSON.parse(localStorage.getItem(COMMENT_KEY)||'[]');}catch(e){return[];}}
-function sv(c){localStorage.setItem(COMMENT_KEY,JSON.stringify(c));}
+// Comment system (Supabase)
+var SB_URL = 'https://cmrcjbhanwzqriwkvpof.supabase.co';
+var SB_KEY = 'sb_publishable_jXRJy1km3NkcmEX8ocQXXg_i9Jb1fp2';
+var SB_TABLE = 'Comments';
+
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-function render(){
-  var l=document.getElementById('comment-list'),c=ls();
-  if(!c.length){l.innerHTML='<div class=\"cp-empty\">还没有留言。</div>';return;}
-  var h='';
-  for(var i=c.length-1;i>=0;i--){
-    h+='<div class=\"cp-item\"><div class=\"cp-name\">'+esc(c[i].nickname)+'</div>';
-    h+='<div class=\"cp-content\">'+esc(c[i].content)+'</div>';
-    h+='<div class=\"cp-date\">'+c[i].date+'</div></div>';
-  }
-  l.innerHTML=h;
+
+function loadComments(){
+  var l=document.getElementById('comment-list');
+  l.innerHTML='<div class=\"cp-empty\">加载中……</div>';
+  fetch(SB_URL+'/rest/v1/'+SB_TABLE+'?select=*&order=created_at.desc&limit=50',{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  }).then(function(r){return r.json();})
+    .then(function(data){
+      if(!data.length){l.innerHTML='<div class=\"cp-empty\">还没有留言。</div>';return;}
+      var h='';
+      for(var i=0;i<data.length;i++){
+        var c=data[i];
+        h+='<div class=\"cp-item\"><div class=\"cp-name\">'+esc(c.nickname)+'</div>';
+        h+='<div class=\"cp-content\">'+esc(c.content)+'</div>';
+        h+='<div class=\"cp-date\">'+(c.created_at||'').slice(0,10)+'</div></div>';
+      }
+      l.innerHTML=h;
+    })
+    .catch(function(){l.innerHTML='<div class=\"cp-empty\">加载失败。</div>';});
 }
+
 function addComment(){
   var n=document.getElementById('cf-nickname').value.trim();
   var t=document.getElementById('cf-content').value.trim();
   var m=document.getElementById('cf-msg');
   if(!n){m.textContent='请填昵称。';return;}
   if(!t){m.textContent='请填内容。';return;}
-  var c=ls();c.push({nickname:n,content:t,date:new Date().toISOString().slice(0,10)});
-  sv(c);render();
-  document.getElementById('cf-nickname').value='';
-  document.getElementById('cf-content').value='';
-  m.textContent='已留言。';setTimeout(function(){m.textContent='';},2000);
+  m.textContent='发送中……';
+  fetch(SB_URL+'/rest/v1/'+SB_TABLE,{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({nickname:n,content:t})
+  }).then(function(){
+    m.textContent='已留言。';
+    document.getElementById('cf-nickname').value='';
+    document.getElementById('cf-content').value='';
+    loadComments();
+    setTimeout(function(){m.textContent='';},2000);
+  }).catch(function(){m.textContent='发送失败。';});
 }
-render();
+
+loadComments();
 
 </script>
 
