@@ -533,6 +533,13 @@ setTimeout(function(){loadComments();},500);
       p.style.display = 'none';
     }
   };
+
+  // Track visit
+  fetch(SB_URL+'/rest/v1/Visits',{
+    method:'POST',
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({page:window.location.pathname||'home',ua:navigator.userAgent})
+  }).catch(function(){});
 })();
 </script>
 </body>
