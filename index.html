@@ -468,6 +468,15 @@ function addComment(){
   m.textContent='已留言。';setTimeout(function(){m.textContent='';},2000);
 }
 render();
+
+// Only show panel on poetry
+var panel = document.getElementById('comment-panel');
+panel.style.display = 'none';
+var _origSwitch2 = switchSection;
+switchSection = function(name){
+  _origSwitch2(name);
+  panel.style.display = (name === 'poetry') ? 'block' : 'none';
+};
 </script>
 
 
