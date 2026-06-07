@@ -411,58 +411,76 @@ body{
 
     <audio id="player" preload="none"></audio>
 
-    <div class="music-row" data-src="井上陽水 - Make-up Shadow.mp3" onclick="playSong(this)">
-      <img src="makeup-shadow-cover.jpg" alt="" class="music-cover">
-      <span class="music-play">▶</span>
-      <div>
-        <div class="music-title">Make-up Shadow</div>
-        <div class="music-by">井上陽水</div>
+    <div>
+      <div class="music-row" data-src="井上陽水 - Make-up Shadow.mp3" onclick="playSong(this)">
+        <img src="makeup-shadow-cover.jpg" alt="" class="music-cover">
+        <span class="music-play">▶</span>
+        <div>
+          <div class="music-title">Make-up Shadow</div>
+          <div class="music-by">井上陽水</div>
+        </div>
       </div>
+      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
 
-    <div class="music-row" data-src="G.E.M.邓紫棋 - 亚莉亚蒂之歌.mp3" onclick="playSong(this)">
-      <img src="arrietty.jpg" alt="" class="music-cover">
-      <span class="music-play">▶</span>
-      <div>
-        <div class="music-title">亚莉亚蒂之歌</div>
-        <div class="music-by">G.E.M. 邓紫棋</div>
+    <div>
+      <div class="music-row" data-src="G.E.M.邓紫棋 - 亚莉亚蒂之歌.mp3" onclick="playSong(this)">
+        <img src="arrietty.jpg" alt="" class="music-cover">
+        <span class="music-play">▶</span>
+        <div>
+          <div class="music-title">亚莉亚蒂之歌</div>
+          <div class="music-by">G.E.M. 邓紫棋</div>
+        </div>
       </div>
+      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
 
-    <div class="music-row" data-src="ELLEGARDEN - Mr. Feather.mp3" onclick="playSong(this)">
-      <img src="mrfeather.jpg" alt="" class="music-cover">
-      <span class="music-play">▶</span>
-      <div>
-        <div class="music-title">Mr. Feather</div>
-        <div class="music-by">ELLEGARDEN</div>
+    <div>
+      <div class="music-row" data-src="ELLEGARDEN - Mr. Feather.mp3" onclick="playSong(this)">
+        <img src="mrfeather.jpg" alt="" class="music-cover">
+        <span class="music-play">▶</span>
+        <div>
+          <div class="music-title">Mr. Feather</div>
+          <div class="music-by">ELLEGARDEN</div>
+        </div>
       </div>
+      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
 
-    <div class="music-row" data-src="手嶌葵 - テルーの唄 (歌集バージョン).mp3" onclick="playSong(this)">
-      <img src="therru.jpg" alt="" class="music-cover">
-      <span class="music-play">▶</span>
-      <div>
-        <div class="music-title">テルーの唄</div>
-        <div class="music-by">手嶌葵</div>
+    <div>
+      <div class="music-row" data-src="手嶌葵 - テルーの唄 (歌集バージョン).mp3" onclick="playSong(this)">
+        <img src="therru.jpg" alt="" class="music-cover">
+        <span class="music-play">▶</span>
+        <div>
+          <div class="music-title">テルーの唄</div>
+          <div class="music-by">手嶌葵</div>
+        </div>
       </div>
+      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
 
-    <div class="music-row" data-src="七ノ歌(なのか).mp3" onclick="playSong(this)">
-      <img src="nanoka.jpg" alt="" class="music-cover">
-      <span class="music-play">▶</span>
-      <div>
-        <div class="music-title">七ノ歌</div>
-        <div class="music-by">RADWIMPS</div>
+    <div>
+      <div class="music-row" data-src="七ノ歌(なのか).mp3" onclick="playSong(this)">
+        <img src="nanoka.jpg" alt="" class="music-cover">
+        <span class="music-play">▶</span>
+        <div>
+          <div class="music-title">七ノ歌</div>
+          <div class="music-by">RADWIMPS</div>
+        </div>
       </div>
+      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
 
-    <div class="music-row" data-src="ヨルシカ - 櫂.mp3" onclick="playSong(this)">
-      <img src="kai.jpg" alt="" class="music-cover">
-      <span class="music-play">▶</span>
-      <div>
-        <div class="music-title">櫂</div>
-        <div class="music-by">ヨルシカ</div>
+    <div>
+      <div class="music-row" data-src="ヨルシカ - 櫂.mp3" onclick="playSong(this)">
+        <img src="kai.jpg" alt="" class="music-cover">
+        <span class="music-play">▶</span>
+        <div>
+          <div class="music-title">櫂</div>
+          <div class="music-by">ヨルシカ</div>
+        </div>
       </div>
+      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
   </section>
 
@@ -496,8 +514,8 @@ function switchSection(name){
 function playSong(el){
   var player = document.getElementById('player');
   var src = el.getAttribute('data-src');
-  var bar = el.querySelector('.music-bar');
-  var barInner = el.querySelector('.music-bar-inner');
+  var bar = el.parentElement.querySelector('.music-bar');
+  var barInner = bar.querySelector('.music-bar-inner');
   var wasPlaying = !player.paused && player.src.indexOf(encodeURI(src)) > -1;
 
   // Hide all bars
