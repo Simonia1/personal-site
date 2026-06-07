@@ -292,6 +292,28 @@ body{
   }
 }
 
+/* Music player */
+.music-row{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:22px;cursor:pointer;
+  position:relative;
+}
+.music-cover{width:100px;height:100px;object-fit:cover;display:block;}
+.music-play{
+  position:absolute;left:0;top:0;
+  width:100px;height:100px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.35);color:#fff;
+  font-size:1.4rem;opacity:0;transition:opacity 0.2s;
+}
+.music-row:hover .music-play{opacity:1;}
+.music-row.playing .music-play{opacity:1;background:rgba(160,82,60,0.5);}
+.music-row.playing .music-play:after{content:'⏸';}
+.music-row.playing .music-play{font-size:0;}
+.music-row.playing .music-play:after{font-size:1.2rem;}
+.music-title{font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;}
+.music-by{font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;}
+
 ::selection{background:rgba(160,82,60,0.12);color:#2b2318;}
 </style>
 </head>
@@ -377,53 +399,61 @@ body{
   <!-- 音乐 -->
   <section class="section" id="sect-music">
     <div class="section-label">音 乐</div>
-    <div class="section-intro">欢迎来听。</div>
+    <div class="section-intro">点击封面播放。</div>
 
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
-      <img src="makeup-shadow-cover.jpg" alt="" style="width:100px;height:100px;object-fit:cover;">
+    <audio id="player" preload="none"></audio>
+
+    <div class="music-row" data-src="井上陽水 - Make-up Shadow.mp3" onclick="playSong(this)">
+      <img src="makeup-shadow-cover.jpg" alt="" class="music-cover">
+      <span class="music-play">▶</span>
       <div>
-        <div style="font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;">Make-up Shadow</div>
-        <div style="font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;">井上陽水</div>
+        <div class="music-title">Make-up Shadow</div>
+        <div class="music-by">井上陽水</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
-      <img src="arrietty.jpg" alt="" style="width:100px;height:100px;object-fit:cover;">
+    <div class="music-row" data-src="G.E.M.邓紫棋 - 亚莉亚蒂之歌.mp3" onclick="playSong(this)">
+      <img src="arrietty.jpg" alt="" class="music-cover">
+      <span class="music-play">▶</span>
       <div>
-        <div style="font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;">亚莉亚蒂之歌</div>
-        <div style="font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;">G.E.M. 邓紫棋</div>
+        <div class="music-title">亚莉亚蒂之歌</div>
+        <div class="music-by">G.E.M. 邓紫棋</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
-      <img src="mrfeather.jpg" alt="" style="width:100px;height:100px;object-fit:cover;">
+    <div class="music-row" data-src="ELLEGARDEN - Mr. Feather.mp3" onclick="playSong(this)">
+      <img src="mrfeather.jpg" alt="" class="music-cover">
+      <span class="music-play">▶</span>
       <div>
-        <div style="font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;">Mr. Feather</div>
-        <div style="font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;">ELLEGARDEN</div>
+        <div class="music-title">Mr. Feather</div>
+        <div class="music-by">ELLEGARDEN</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
-      <img src="therru.jpg" alt="" style="width:100px;height:100px;object-fit:cover;">
+    <div class="music-row" data-src="手嶌葵 - テルーの唄 (歌集バージョン).mp3" onclick="playSong(this)">
+      <img src="therru.jpg" alt="" class="music-cover">
+      <span class="music-play">▶</span>
       <div>
-        <div style="font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;">テルーの唄</div>
-        <div style="font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;">手嶌葵</div>
+        <div class="music-title">テルーの唄</div>
+        <div class="music-by">手嶌葵</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
-      <img src="nanoka.jpg" alt="" style="width:100px;height:100px;object-fit:cover;">
+    <div class="music-row" data-src="七ノ歌(なのか).mp3" onclick="playSong(this)">
+      <img src="nanoka.jpg" alt="" class="music-cover">
+      <span class="music-play">▶</span>
       <div>
-        <div style="font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;">七ノ歌</div>
-        <div style="font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;">RADWIMPS</div>
+        <div class="music-title">七ノ歌</div>
+        <div class="music-by">RADWIMPS</div>
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:18px;margin-bottom:28px;">
-      <img src="kai.jpg" alt="" style="width:100px;height:100px;object-fit:cover;">
+    <div class="music-row" data-src="ヨルシカ - 櫂.mp3" onclick="playSong(this)">
+      <img src="kai.jpg" alt="" class="music-cover">
+      <span class="music-play">▶</span>
       <div>
-        <div style="font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;">櫂</div>
-        <div style="font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;">ヨルシカ</div>
+        <div class="music-title">櫂</div>
+        <div class="music-by">ヨルシカ</div>
       </div>
     </div>
   </section>
@@ -453,6 +483,23 @@ function switchSection(name){
   if(window.innerWidth <= 768){
     document.querySelector('.main').scrollIntoView({behavior:'smooth'});
   }
+}
+
+function playSong(el){
+  var player = document.getElementById('player');
+  var src = el.getAttribute('data-src');
+  var wasPlaying = !player.paused && player.src.indexOf(encodeURI(src)) > -1;
+  // Remove playing from all rows
+  document.querySelectorAll('.music-row').forEach(function(r){r.classList.remove('playing');});
+  if(wasPlaying){
+    player.pause();
+  } else {
+    player.src = src;
+    player.play();
+    el.classList.add('playing');
+  }
+  player.onended = function(){el.classList.remove('playing');};
+  player.onerror = function(){el.classList.remove('playing');};
 }
 
 function togglePoem(el){
