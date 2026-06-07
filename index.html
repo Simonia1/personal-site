@@ -429,105 +429,23 @@ function togglePoem(el){
 <aside class="comment-panel" id="comment-panel">
   <h3>诗 歌 推 荐</h3>
   <div class="cp-intro">读到好的，请留在这里。</div>
-  <div id="cusdis_thread"
-    data-host="https://cusdis.com"
-    data-app-id="26905533-a52b-4b5a-9e2d-49728c043cdf"
-    data-page-id="poetry"
-    data-page-url="https://haozeli.cn"
-    data-page-title="诗歌 · 檐下"
-    data-theme="light"
-  ></div>
+  <div id="cusdis_thread"></div>
+  <script>
+    window.CUSDIS_PAGE_ID = 'poetry';
+    window.CUSDIS_PAGE_URL = 'https://haozeli.cn';
+    window.CUSDIS_PAGE_TITLE = '诗歌 · 檐下';
+    window.CUSDIS_APP_ID = 'c8b3e91b-67e6-479f-b07f-4afb54a108c2';
+  </script>
   <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 </aside>
 
 <script>
-var CUSDIS_APP_ID = '26905533-a52b-4b5a-9e2d-49728c043cdf';
-var CUSDIS_PAGE_ID = 'poetry';
-
-function fetchComments(){
-  fetch('https://cusdis.com/api/open/comments?app_id=' + CUSDIS_APP_ID + '&page_id=' + CUSDIS_PAGE_ID)
-    .then(function(r){return r.json();})
-    .then(function(data){
-      var panel = document.getElementById('comment-panel');
-      var empty = document.getElementById('cp-empty');
-      // Remove old items
-      var oldItems = panel.querySelectorAll('.cp-item');
-      oldItems.forEach(function(el){el.remove();});
-
-      var comments = data.data || [];
-      if(comments.length === 0){
-        empty.textContent = '还没有留言。读到好诗了？';
-        empty.style.display = 'block';
-      } else {
-        empty.style.display = 'none';
-        comments.forEach(function(c){
-          var div = document.createElement('div');
-          div.className = 'cp-item';
-          var d = new Date(c.created_at);
-          var ds = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
-          div.innerHTML = '<div class="cp-name">' + esc(c.nickname || '匿名') + '</div>'
-            + '<div class="cp-text">' + esc(c.content || '') + '</div>'
-            + '<div class="cp-time">' + ds + '</div>';
-          panel.insertBefore(div, empty);
-        });
-      }
-    })
-    .catch(function(){
-      document.getElementById('cp-empty').textContent = '加载失败，刷新试试。';
-    });
-}
-
-function esc(s){
-  var d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-function submitComment(){
-  var nickname = document.getElementById('cf-nickname').value.trim();
-  var content = document.getElementById('cf-content').value.trim();
-  var status = document.getElementById('cf-status');
-  if(!nickname){status.textContent='请填昵称。';return;}
-  if(!content){status.textContent='请写内容。';return;}
-  status.textContent = '发送中……';
-  fetch('https://cusdis.com/api/open/comments', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      app_id: CUSDIS_APP_ID,
-      page_id: CUSDIS_PAGE_ID,
-      page_url: 'https://haozeli.cn',
-      page_title: '诗歌 · 檐下',
-      content: content,
-      nickname: nickname
-    })
-  }).then(function(r){return r.json();})
-    .then(function(){
-      status.textContent = '已发送，审核后显示。';
-      document.getElementById('cf-content').value = '';
-      setTimeout(fetchComments, 3000);
-    })
-    .catch(function(){
-      status.textContent = '发送失败，再试一次。';
-    });
-}
-
-// Show/hide panel based on section
+// Show/hide panel
 function updatePanel(name){
-  var panel = document.getElementById('comment-panel');
-  if(name === 'poetry'){
-    panel.style.display = 'block';
-    fetchComments();
-  } else {
-    panel.style.display = 'none';
-  }
+  document.getElementById('comment-panel').style.display = (name === 'poetry') ? 'block' : 'none';
 }
-
-// Initial: hide panel (daily is default)
 document.getElementById('comment-panel').style.display = 'none';
-fetchComments(); // preload
 
-// Patch switchSection
 var _origSwitch = switchSection;
 switchSection = function(name){
   _origSwitch(name);
