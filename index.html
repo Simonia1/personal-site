@@ -474,7 +474,7 @@ render();
 
 
 <!-- Comment Panel -->
-<aside class="comment-panel" id="comment-panel">
+<aside class="comment-panel" id="comment-panel" style="display:none;">
   <h3>欢 迎 分 享</h3>
   <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
   <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300"></textarea>
@@ -487,7 +487,6 @@ render();
 (function(){
   var p = document.getElementById('comment-panel');
   if(!p) return;
-  p.style.display = 'none';
   var orig = switchSection;
   switchSection = function(name){
     orig(name);
