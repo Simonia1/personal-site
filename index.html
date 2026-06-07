@@ -429,9 +429,67 @@ function togglePoem(el){
 <aside class="comment-panel" id="comment-panel">
   <h3>欢 迎 分 享</h3>
   <div class="cp-intro">读到好的，请留在这里。</div>
+  <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;letter-spacing:0.04em;">
+  <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;height:60px;resize:vertical;letter-spacing:0.04em;"></textarea>
+  <button onclick="addComment()" style="padding:4px 16px;background:transparent;border:1px solid rgba(160,82,60,0.3);color:#a0523c;font-family:inherit;font-size:0.68rem;letter-spacing:0.06em;cursor:pointer;margin-bottom:16px;">留 言</button>
+  <div id="cf-msg" style="font-size:0.62rem;color:#a09080;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(138,125,110,0.12);"></div>
+  <div id="comment-list"></div>
 </aside>
 
 <script>
+// Comment system (localStorage)
+var COMMENT_KEY = 'simon_poetry_comments';
+function loadComments(){
+  try{return JSON.parse(localStorage.getItem(COMMENT_KEY) || '[]');}catch(e){return[];}
+}
+function saveComments(comments){
+  localStorage.setItem(COMMENT_KEY, JSON.stringify(comments));
+}
+function renderComments(){
+  var list = document.getElementById('comment-list');
+  var comments = loadComments();
+  if(comments.length === 0){
+    list.innerHTML = '<div style="font-size:0.7rem;font-weight:300;color:#bbb;font-style:italic;text-align:center;margin-top:20px;">还没有留言。</div>';
+    return;
+  }
+  var h = '';
+  for(var i = comments.length-1; i >= 0; i--){
+    var c = comments[i];
+    h += '<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(138,125,110,0.06);">';
+    h += '<div style="font-size:0.75rem;font-weight:600;color:#8a7d6e;letter-spacing:0.04em;">' + escHTML(c.nickname) + '</div>';
+    h += '<div style="font-size:0.72rem;font-weight:300;color:#3a3028;line-height:1.7;margin-top:3px;">' + escHTML(c.content) + '</div>';
+    h += '<div style="font-size:0.62rem;color:#bbb;margin-top:3px;">' + c.date + '</div>';
+    h += '</div>';
+  }
+  list.innerHTML = h;
+}
+function escHTML(s){
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+function addComment(){
+  var nickname = document.getElementById('cf-nickname').value.trim();
+  var content = document.getElementById('cf-content').value.trim();
+  var msg = document.getElementById('cf-msg');
+  if(!nickname){msg.textContent='请填昵称。';return;}
+  if(!content){msg.textContent='请填内容。';return;}
+  var comments = loadComments();
+  comments.push({
+    nickname: nickname,
+    content: content,
+    date: new Date().toISOString().slice(0,10)
+  });
+  saveComments(comments);
+  document.getElementById('cf-nickname').value = '';
+  document.getElementById('cf-content').value = '';
+  msg.textContent = '已留言。';
+  renderComments();
+  setTimeout(function(){msg.textContent='';},2000);
+}
+
+renderComments();
+
 // Show/hide panel
 var panel = document.getElementById('comment-panel');
 var _origSwitch = switchSection;
