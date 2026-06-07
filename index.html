@@ -214,6 +214,33 @@ body{
   font-style:italic;text-align:center;
   margin-top:32px;
 }
+.comment-panel input,.comment-panel textarea{
+  display:block;width:100%;
+  padding:6px 10px;margin-bottom:8px;
+  background:transparent;
+  border:1px solid rgba(138,125,110,0.2);
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.72rem;color:#2b2318;
+  outline:none;letter-spacing:0.04em;
+  transition:border-color 0.2s;
+}
+.comment-panel input:focus,.comment-panel textarea:focus{
+  border-color:#a0523c;
+}
+.comment-panel textarea{height:60px;resize:vertical;}
+.comment-panel .cp-btn{
+  padding:4px 16px;
+  background:transparent;
+  border:1px solid rgba(160,82,60,0.3);
+  color:#a0523c;
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.68rem;letter-spacing:0.06em;
+  cursor:pointer;margin-bottom:16px;
+  transition:all 0.25s;
+}
+.comment-panel .cp-btn:hover{
+  background:rgba(160,82,60,0.06);
+}
 @media(max-width:768px){
   .comment-panel{display:none;}
 }
@@ -428,9 +455,9 @@ function togglePoem(el){
 <!-- Comment Panel -->
 <aside class="comment-panel" id="comment-panel">
   <h3>欢 迎 分 享</h3>
-  <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;letter-spacing:0.04em;">
-  <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;height:60px;resize:vertical;letter-spacing:0.04em;"></textarea>
-  <button onclick="addComment()" style="padding:4px 16px;background:transparent;border:1px solid rgba(160,82,60,0.3);color:#a0523c;font-family:inherit;font-size:0.68rem;letter-spacing:0.06em;cursor:pointer;margin-bottom:16px;">留 言</button>
+  <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
+  <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300"></textarea>
+  <button class="cp-btn" onclick="addComment()">留 言</button>
   <div id="cf-msg" style="font-size:0.62rem;color:#a09080;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(138,125,110,0.12);"></div>
   <div id="comment-list"></div>
 </aside>
