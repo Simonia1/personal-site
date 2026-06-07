@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simon</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:17px;-webkit-font-smoothing:antialiased;}
+body{
+  background:#f4f1ea;
+  color:#111;
+  font-family:"Noto Serif SC",Georgia,serif;
+  line-height:1.9;
+  min-height:100vh;
+  display:flex;
+}
+
+/* SIDEBAR — minimal, functional, left-aligned */
+.sidebar{
+  width:180px;
+  min-height:100vh;
+  padding:48px 20px 40px 32px;
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;
+  background:#f4f1ea;
+  z-index:10;
+}
+.avatar-wrap{width:100px;height:100px;margin-bottom:28px;}
+.avatar-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.site-name{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:1.1rem;font-weight:900;
+  letter-spacing:0.16em;color:#111;
+  margin-bottom:4px;
+}
+.site-sub{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:0.62rem;font-weight:400;
+  color:#888;letter-spacing:0.12em;
+  margin-bottom:52px;
+}
+
+.nav{display:flex;flex-direction:column;gap:4px;flex:1;}
+.nav a{
+  display:block;padding:5px 0;
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:0.75rem;font-weight:400;
+  color:#999;text-decoration:none;
+  letter-spacing:0.14em;
+  cursor:pointer;transition:color 0.2s,transform 0.2s;
+}
+.nav a:hover{color:#111;transform:translateX(4px);}
+.nav a.active{color:#111;font-weight:700;}
+
+/* MAIN — bold typography, deliberate asymmetry */
+.main{
+  margin-left:180px;flex:1;
+  padding:60px 64px 80px 48px;
+  max-width:780px;
+}
+.section{display:none;}
+.section.active{display:block;animation:in 0.4s ease;}
+@keyframes in{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:translateX(0);}}
+
+/* Section header — type as attitude */
+.sec-label{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:0.62rem;font-weight:400;
+  letter-spacing:0.2em;color:#999;
+  margin-bottom:68px;
+}
+.sec-label span{
+  display:inline-block;
+  background:#111;
+  color:#f4f1ea;
+  padding:2px 10px;
+  letter-spacing:0.1em;
+}
+
+/* Poetry — the hero piece, with attitude */
+.poem{margin-bottom:0;}
+.poem .number{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:3rem;font-weight:900;
+  color:#111;line-height:1;
+  margin-bottom:8px;
+  letter-spacing:-0.02em;
+}
+.poem h2{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:1.4rem;font-weight:900;
+  letter-spacing:0.12em;color:#111;
+  margin-bottom:6px;
+}
+.poem .meta{
+  font-size:0.68rem;color:#999;
+  letter-spacing:0.06em;margin-bottom:36px;
+}
+.poem .body{
+  font-size:1.05rem;font-weight:400;
+  line-height:2.5;color:#111;
+  max-width:460px;
+}
+.poem .body p{margin-bottom:4px;}
+.poem .body p:first-child{
+  font-size:1.2rem;
+  font-weight:700;
+}
+.poem .note{
+  margin-top:32px;padding-top:16px;
+  border-top:1px solid #ddd;
+  font-size:0.62rem;color:#aaa;
+  line-height:1.7;max-width:440px;
+}
+
+/* Entry — clean, with numbered dates */
+.entry{
+  margin-bottom:40px;
+  padding-bottom:0;
+}
+.entry-date{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:0.62rem;font-weight:400;
+  color:#999;letter-spacing:0.12em;
+  margin-bottom:10px;
+}
+.entry h2{
+  font-family:"Noto Sans SC",sans-serif;
+  font-size:1rem;font-weight:700;
+  letter-spacing:0.08em;color:#111;
+  margin-bottom:12px;
+}
+.entry-body{
+  font-size:0.9rem;font-weight:400;
+  color:#111;max-width:480px;
+  line-height:2;
+}
+
+@media(max-width:768px){
+  body{flex-direction:column;}
+  .sidebar{position:relative;width:100%;min-height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:20px;gap:12px;}
+  .avatar-wrap{width:40px;height:40px;margin-bottom:0;}
+  .site-sub{display:none;}
+  .nav{flex-direction:row;gap:2px;}
+  .nav a{padding:4px 8px;font-size:0.7rem;}
+  .main{margin-left:0;padding:32px 20px 60px;}
+}
+::selection{background:#111;color:#f4f1ea;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="avatar-wrap"><img src="../avatar.jpg" alt=""></div>
+  <div class="site-name">檐 下</div>
+  <div class="site-sub">S I M O N</div>
+  <nav class="nav">
+    <a class="active" onclick="s('daily')">日常</a>
+    <a onclick="s('poetry')">诗歌</a>
+    <a onclick="s('music')">音乐</a>
+    <a onclick="s('academic')">学术</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <section class="section active" id="sec-daily">
+    <div class="sec-label"><span>日常</span></div>
+    <article class="entry">
+      <div class="entry-date">2026 / 06 / 03</div>
+      <h2>黄昏穿过图书馆三楼</h2>
+      <div class="entry-body">六点过一刻，西边的光从书架间隙斜打进来，整排书脊像被点燃了一样。我站在那里看了很久。不是因为美，是因为突然发现：每天这个时间这片光都在，但我从来没有停下来看过。</div>
+    </article>
+    <article class="entry">
+      <div class="entry-date">2026 / 05 / 20</div>
+      <h2>雨天的正确打开方式</h2>
+      <div class="entry-body">下雨的周末。泡了杯过期挂耳，就着雨声读完剩下半本《雪国》。雨停时天已黑。想起还没吃午饭。</div>
+    </article>
+  </section>
+
+  <section class="section" id="sec-poetry">
+    <div class="sec-label"><span>诗歌</span></div>
+    <article class="poem">
+      <div class="number">01</div>
+      <h2>雲 雀 料 理</h2>
+      <div class="meta">萩原朔太郎 · 《月に吠える》1917 · 小椿山 译</div>
+      <div class="body">
+        <p>如献上祭品般献上夜晚的爱筵，</p>
+        <p>蜡烛被鱼脂熏染上阴郁，</p>
+        <p>我决心推开那扇可爱的绿窗户。</p>
+        <p>啊，看一看天空，</p>
+        <p>将五月遥远之地流动的东西，</p>
+        <p>捧上我手中盛着云雀的餐盘，</p>
+        <p>而可爱的你决心向左边走去。</p>
+      </div>
+      <div class="note">*agape，初期基督教徒的会餐。选自《吠月：萩原朔太郎诗集》，明室Lucida丨北京联合出版公司，2021</div>
+    </article>
+  </section>
+
+  <section class="section" id="sec-music">
+    <div class="sec-label"><span>音乐</span></div>
+  </section>
+
+  <section class="section" id="sec-academic">
+    <div class="sec-label"><span>学术</span></div>
+  </section>
+</div>
+
+<script>
+function s(n){
+  document.querySelectorAll('.nav a').forEach(function(a,i){
+    a.classList.toggle('active',['daily','poetry','music','academic'][i]===n);
+  });
+  document.querySelectorAll('.section').forEach(function(e){e.classList.remove('active');});
+  var t=document.getElementById('sec-'+n);if(t)t.classList.add('active');
+}
+</script>
+</body>
+</html>
