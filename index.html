@@ -482,9 +482,9 @@ function addComment(){
     m.textContent='已留言。';
     document.getElementById('cf-nickname').value='';
     document.getElementById('cf-content').value='';
-    loadComments();
+    setTimeout(function(){loadComments();},500);
     setTimeout(function(){m.textContent='';},2000);
-  }).catch(function(){m.textContent='发送失败。';});
+  }).catch(function(err){m.textContent='发送失败：'+err.message;});
 }
 
 loadComments();
