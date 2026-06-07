@@ -171,20 +171,94 @@ body{
   font-style:italic;
 }
 
-/* ===== COMMENT SECTION ===== */
-.comment-section{
-  margin-top:56px;
-  padding-top:32px;
-  border-top:1px solid rgba(138,125,110,0.15);
+/* ===== COMMENT PANEL (right side) ===== */
+.comment-panel{
+  position:fixed;right:0;top:0;
+  width:300px;height:100vh;
+  background:rgba(250,246,240,0.97);
+  border-left:1px solid rgba(138,125,110,0.12);
+  padding:48px 22px 40px;
+  z-index:5;
+  overflow-y:auto;
+  font-family:"Noto Serif SC",Georgia,serif;
 }
-.comment-section h3{
+.comment-panel h3{
   font-size:0.85rem;font-weight:600;
   letter-spacing:0.08em;color:#2b2318;
   margin-bottom:4px;
 }
-.comment-section .cs-intro{
-  font-size:0.72rem;font-weight:300;color:#a09080;
-  letter-spacing:0.04em;margin-bottom:28px;
+.comment-panel .cp-intro{
+  font-size:0.68rem;font-weight:300;color:#a09080;
+  letter-spacing:0.04em;margin-bottom:20px;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(138,125,110,0.12);
+}
+.comment-panel .cp-item{
+  margin-bottom:14px;padding-bottom:14px;
+  border-bottom:1px solid rgba(138,125,110,0.06);
+}
+.comment-panel .cp-name{
+  font-size:0.75rem;font-weight:600;color:#8a7d6e;
+  letter-spacing:0.04em;
+}
+.comment-panel .cp-text{
+  font-size:0.75rem;font-weight:300;color:#3a3028;
+  line-height:1.7;margin-top:4px;
+}
+.comment-panel .cp-time{
+  font-size:0.62rem;font-weight:300;color:#bbb;
+  margin-top:4px;
+}
+.comment-panel .cp-empty{
+  font-size:0.7rem;font-weight:300;color:#bbb;
+  font-style:italic;text-align:center;
+  margin-top:32px;
+}
+@media(max-width:768px){
+  .comment-panel{display:none;}
+}
+
+/* ===== COMMENT FORM (in poetry section) ===== */
+.comment-form{
+  margin-top:48px;padding-top:28px;
+  border-top:1px solid rgba(138,125,110,0.15);
+}
+.comment-form h3{
+  font-size:0.85rem;font-weight:600;
+  letter-spacing:0.08em;color:#2b2318;
+  margin-bottom:4px;
+}
+.comment-form .cf-intro{
+  font-size:0.68rem;font-weight:300;color:#a09080;
+  letter-spacing:0.04em;margin-bottom:16px;
+}
+.comment-form input,.comment-form textarea{
+  display:block;width:100%;max-width:400px;
+  padding:8px 12px;margin-bottom:10px;
+  background:transparent;
+  border:1px solid rgba(138,125,110,0.2);
+  border-radius:0;
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.8rem;color:#2b2318;
+  outline:none;letter-spacing:0.04em;
+  transition:border-color 0.2s;
+}
+.comment-form input:focus,.comment-form textarea:focus{
+  border-color:#a0523c;
+}
+.comment-form textarea{height:80px;resize:vertical;}
+.comment-form button{
+  padding:6px 20px;
+  background:transparent;
+  border:1px solid rgba(160,82,60,0.3);
+  color:#a0523c;
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.72rem;letter-spacing:0.06em;
+  cursor:pointer;transition:all 0.25s;
+}
+.comment-form button:hover{
+  background:rgba(160,82,60,0.06);
+  border-color:#a0523c;
 }
 
 /* Entry */
@@ -308,18 +382,13 @@ body{
       </div>
     </article>
 
-    <div class="comment-section">
+    <div class="comment-form" id="comment-form">
       <h3>推 荐 诗 歌</h3>
-      <div class="cs-intro">读到好的，请留在这里。</div>
-      <div id="cusdis_thread"
-        data-host="https://cusdis.com"
-        data-app-id="26905533-a52b-4b5a-9e2d-49728c043cdf"
-        data-page-id="poetry"
-        data-page-url="https://haozeli.cn"
-        data-page-title="诗歌 · 檐下"
-        data-theme="light"
-      ></div>
-      <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+      <div class="cf-intro">读到好的，请留在这里。</div>
+      <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
+      <textarea id="cf-content" placeholder="写下你推荐的诗……" maxlength="500"></textarea>
+      <button onclick="submitComment()">留 言</button>
+      <div id="cf-status" style="font-size:0.68rem;color:#a09080;margin-top:8px;"></div>
     </div>
   </section>
 
@@ -404,6 +473,109 @@ function togglePoem(el){
 }
 </script>
 
+
+
+<!-- Comment Panel -->
+<aside class="comment-panel" id="comment-panel">
+  <h3>诗 歌 推 荐</h3>
+  <div class="cp-intro">大家的留言</div>
+  <div class="cp-empty" id="cp-empty">加载中……</div>
+</aside>
+
+<script>
+var CUSDIS_APP_ID = '26905533-a52b-4b5a-9e2d-49728c043cdf';
+var CUSDIS_PAGE_ID = 'poetry';
+
+function fetchComments(){
+  fetch('https://cusdis.com/api/open/comments?app_id=' + CUSDIS_APP_ID + '&page_id=' + CUSDIS_PAGE_ID)
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var panel = document.getElementById('comment-panel');
+      var empty = document.getElementById('cp-empty');
+      // Remove old items
+      var oldItems = panel.querySelectorAll('.cp-item');
+      oldItems.forEach(function(el){el.remove();});
+
+      var comments = data.data || [];
+      if(comments.length === 0){
+        empty.textContent = '还没有留言。读到好诗了？';
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+        comments.forEach(function(c){
+          var div = document.createElement('div');
+          div.className = 'cp-item';
+          var d = new Date(c.created_at);
+          var ds = d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+          div.innerHTML = '<div class="cp-name">' + esc(c.nickname || '匿名') + '</div>'
+            + '<div class="cp-text">' + esc(c.content || '') + '</div>'
+            + '<div class="cp-time">' + ds + '</div>';
+          panel.insertBefore(div, empty);
+        });
+      }
+    })
+    .catch(function(){
+      document.getElementById('cp-empty').textContent = '加载失败，刷新试试。';
+    });
+}
+
+function esc(s){
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function submitComment(){
+  var nickname = document.getElementById('cf-nickname').value.trim();
+  var content = document.getElementById('cf-content').value.trim();
+  var status = document.getElementById('cf-status');
+  if(!nickname){status.textContent='请填昵称。';return;}
+  if(!content){status.textContent='请写内容。';return;}
+  status.textContent = '发送中……';
+  fetch('https://cusdis.com/api/open/comments', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      app_id: CUSDIS_APP_ID,
+      page_id: CUSDIS_PAGE_ID,
+      page_url: 'https://haozeli.cn',
+      page_title: '诗歌 · 檐下',
+      content: content,
+      nickname: nickname
+    })
+  }).then(function(r){return r.json();})
+    .then(function(){
+      status.textContent = '已发送，审核后显示。';
+      document.getElementById('cf-content').value = '';
+      setTimeout(fetchComments, 3000);
+    })
+    .catch(function(){
+      status.textContent = '发送失败，再试一次。';
+    });
+}
+
+// Show/hide panel based on section
+function updatePanel(name){
+  var panel = document.getElementById('comment-panel');
+  if(name === 'poetry'){
+    panel.style.display = 'block';
+    fetchComments();
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+// Initial: hide panel (daily is default)
+document.getElementById('comment-panel').style.display = 'none';
+fetchComments(); // preload
+
+// Patch switchSection
+var _origSwitch = switchSection;
+switchSection = function(name){
+  _origSwitch(name);
+  updatePanel(name);
+};
+</script>
 
 </body>
 </html>
