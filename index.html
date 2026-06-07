@@ -218,48 +218,6 @@ body{
   .comment-panel{display:none;}
 }
 
-/* ===== COMMENT FORM (in poetry section) ===== */
-.comment-form{
-  margin-top:48px;padding-top:28px;
-  border-top:1px solid rgba(138,125,110,0.15);
-}
-.comment-form h3{
-  font-size:0.85rem;font-weight:600;
-  letter-spacing:0.08em;color:#2b2318;
-  margin-bottom:4px;
-}
-.comment-form .cf-intro{
-  font-size:0.68rem;font-weight:300;color:#a09080;
-  letter-spacing:0.04em;margin-bottom:16px;
-}
-.comment-form input,.comment-form textarea{
-  display:block;width:100%;max-width:400px;
-  padding:8px 12px;margin-bottom:10px;
-  background:transparent;
-  border:1px solid rgba(138,125,110,0.2);
-  border-radius:0;
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.8rem;color:#2b2318;
-  outline:none;letter-spacing:0.04em;
-  transition:border-color 0.2s;
-}
-.comment-form input:focus,.comment-form textarea:focus{
-  border-color:#a0523c;
-}
-.comment-form textarea{height:80px;resize:vertical;}
-.comment-form button{
-  padding:6px 20px;
-  background:transparent;
-  border:1px solid rgba(160,82,60,0.3);
-  color:#a0523c;
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.72rem;letter-spacing:0.06em;
-  cursor:pointer;transition:all 0.25s;
-}
-.comment-form button:hover{
-  background:rgba(160,82,60,0.06);
-  border-color:#a0523c;
-}
 
 /* Entry */
 .entry{
@@ -382,14 +340,6 @@ body{
       </div>
     </article>
 
-    <div class="comment-form" id="comment-form">
-      <h3>推 荐 诗 歌</h3>
-      <div class="cf-intro">读到好的，请留在这里。</div>
-      <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
-      <textarea id="cf-content" placeholder="写下你推荐的诗……" maxlength="500"></textarea>
-      <button onclick="submitComment()">留 言</button>
-      <div id="cf-status" style="font-size:0.68rem;color:#a09080;margin-top:8px;"></div>
-    </div>
   </section>
 
   <!-- 音乐 -->
@@ -478,7 +428,11 @@ function togglePoem(el){
 <!-- Comment Panel -->
 <aside class="comment-panel" id="comment-panel">
   <h3>诗 歌 推 荐</h3>
-  <div class="cp-intro">大家的留言</div>
+  <div class="cp-intro">读到好的，请留在这里。</div>
+  <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;letter-spacing:0.04em;">
+  <textarea id="cf-content" placeholder="写下你推荐的诗……" maxlength="500" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;height:72px;resize:vertical;letter-spacing:0.04em;"></textarea>
+  <button onclick="submitComment()" style="padding:4px 16px;background:transparent;border:1px solid rgba(160,82,60,0.3);color:#a0523c;font-family:inherit;font-size:0.68rem;letter-spacing:0.06em;cursor:pointer;margin-bottom:6px;">留 言</button>
+  <div id="cf-status" style="font-size:0.62rem;color:#a09080;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(138,125,110,0.12);"></div>
   <div class="cp-empty" id="cp-empty">加载中……</div>
 </aside>
 
