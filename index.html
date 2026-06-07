@@ -181,8 +181,6 @@ body{
   z-index:5;
   overflow-y:auto;
   font-family:"Noto Serif SC",Georgia,serif;
-  transform:translateX(110%);
-  transition:transform 0.3s ease;
 }
 .comment-panel h3{
   font-size:0.85rem;font-weight:600;
@@ -415,13 +413,6 @@ function togglePoem(el){
 </aside>
 
 <script>
-// Show/hide panel via transform
-var panel = document.getElementById('comment-panel');
-var _origSwitch = switchSection;
-switchSection = function(name){
-  _origSwitch(name);
-  panel.style.transform = (name === 'poetry') ? 'translateX(0)' : 'translateX(110%)';
-};
 </script>
 
 </body>
