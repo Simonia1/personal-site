@@ -449,7 +449,7 @@ function esc(s){var d=document.createElement('div');d.textContent=s;return d.inn
 function loadComments(){
   var l=document.getElementById('comment-list');
   l.innerHTML='<div class=\"cp-empty\">加载中……</div>';
-  fetch(SB_URL+'/rest/v1/'+SB_TABLE+'?select=*&order=created_at.desc&limit=50',{
+  fetch(SB_URL+'/rest/v1/'+SB_TABLE+'?select=*&limit=50',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   }).then(function(r){return r.json();})
     .then(function(data){
@@ -459,7 +459,7 @@ function loadComments(){
         var c=data[i];
         h+='<div class=\"cp-item\"><div class=\"cp-name\">'+esc(c.nickname)+'</div>';
         h+='<div class=\"cp-content\">'+esc(c.content)+'</div>';
-        h+='<div class=\"cp-date\">'+(c.created_at||'').slice(0,10)+'</div></div>';
+        h+='</div>';
       }
       l.innerHTML=h;
     })
