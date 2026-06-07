@@ -482,7 +482,7 @@ function addComment(){
     m.textContent='已留言。';
     document.getElementById('cf-nickname').value='';
     document.getElementById('cf-content').value='';
-    setTimeout(function(){loadComments();},500);
+    setTimeout(function(){loadComments();},200);
     setTimeout(function(){m.textContent='';},2000);
   }).catch(function(err){m.textContent='发送失败：'+err.message;});
 }
@@ -510,7 +510,12 @@ setTimeout(function(){loadComments();},500);
   var orig = switchSection;
   switchSection = function(name){
     orig(name);
-    p.style.display = (name === 'poetry') ? 'block' : 'none';
+    if(name === 'poetry'){
+      p.style.display = 'block';
+      loadComments();
+    } else {
+      p.style.display = 'none';
+    }
   };
 })();
 </script>
