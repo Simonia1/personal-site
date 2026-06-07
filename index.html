@@ -448,11 +448,12 @@ function esc(s){var d=document.createElement('div');d.textContent=s;return d.inn
 
 function loadComments(){
   var l=document.getElementById('comment-list');
-  l.innerHTML='<div class=\"cp-empty\">加载中……</div>';
+  if(!l) return;
   fetch(SB_URL+'/rest/v1/'+SB_TABLE+'?select=*&limit=50',{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   }).then(function(r){return r.json();})
     .then(function(data){
+      if(data.error){l.innerHTML='<div class=\"cp-empty\">'+data.message+'</div>';return;}
       if(!data.length){l.innerHTML='<div class=\"cp-empty\">还没有留言。</div>';return;}
       var h='';
       for(var i=0;i<data.length;i++){
@@ -463,7 +464,7 @@ function loadComments(){
       }
       l.innerHTML=h;
     })
-    .catch(function(){l.innerHTML='<div class=\"cp-empty\">加载失败。</div>';});
+    .catch(function(e){l.innerHTML='<div class=\"cp-empty\">加载失败：'+e.message+'</div>';});
 }
 
 function addComment(){
