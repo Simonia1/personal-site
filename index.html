@@ -171,47 +171,20 @@ body{
   font-style:italic;
 }
 
-/* ===== COMMENT PANEL ===== */
-.comment-panel{
-  position:fixed;right:0;top:0;
-  width:440px;height:100vh;
-  background:rgba(250,246,240,0.97);
-  border-left:1px solid rgba(138,125,110,0.12);
-  padding:48px 22px 40px;
-  display:flex;flex-direction:column;
-  z-index:5;
-  overflow-y:auto;
+/* ===== COMMENT SECTION ===== */
+.comment-section{
+  margin-top:56px;
+  padding-top:32px;
+  border-top:1px solid rgba(138,125,110,0.15);
 }
-.comment-panel h3{
-  font-size:0.8rem;font-weight:600;
+.comment-section h3{
+  font-size:0.85rem;font-weight:600;
   letter-spacing:0.08em;color:#2b2318;
   margin-bottom:4px;
 }
-.comment-panel .cp-intro{
-  font-size:0.68rem;font-weight:300;color:#a09080;
-  letter-spacing:0.04em;margin-bottom:24px;
-  padding-bottom:16px;
-  border-bottom:1px solid rgba(138,125,110,0.12);
-}
-.comment-panel .cp-item{
-  margin-bottom:16px;padding-bottom:14px;
-  border-bottom:1px solid rgba(138,125,110,0.06);
-}
-.comment-panel .cp-name{
-  font-size:0.72rem;font-weight:600;color:#8a7d6e;
-  letter-spacing:0.04em;
-}
-.comment-panel .cp-text{
-  font-size:0.72rem;font-weight:300;color:#5a4e40;
-  line-height:1.7;margin-top:4px;
-}
-.comment-panel .cp-placeholder{
-  font-size:0.7rem;font-weight:300;color:#bbb;
-  font-style:italic;text-align:center;
-  margin-top:32px;
-}
-@media(max-width:768px){
-  .comment-panel{display:none;}
+.comment-section .cs-intro{
+  font-size:0.72rem;font-weight:300;color:#a09080;
+  letter-spacing:0.04em;margin-bottom:28px;
 }
 
 /* Entry */
@@ -334,6 +307,20 @@ body{
         <div class="poetry-source">选自《海子的诗》，人民文学出版社，1999</div>
       </div>
     </article>
+
+    <div class="comment-section">
+      <h3>推 荐 诗 歌</h3>
+      <div class="cs-intro">读到好的，请留在这里。</div>
+      <div id="cusdis_thread"
+        data-host="https://cusdis.com"
+        data-app-id="26905533-a52b-4b5a-9e2d-49728c043cdf"
+        data-page-id="poetry"
+        data-page-url="https://haozeli.cn"
+        data-page-title="诗歌 · 檐下"
+        data-theme="light"
+      ></div>
+      <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+    </div>
   </section>
 
   <!-- 音乐 -->
@@ -403,16 +390,6 @@ function switchSection(name){
   if(target) target.classList.add('active');
 
   // Show comment panel only on poetry
-  var panel = document.getElementById('comment-panel');
-  if(panel){
-    if(name === 'poetry'){
-      panel.style.opacity = '1';
-      panel.style.pointerEvents = 'auto';
-    } else {
-      panel.style.opacity = '0';
-      panel.style.pointerEvents = 'none';
-    }
-  }
 
   if(window.innerWidth <= 768){
     document.querySelector('.main').scrollIntoView({behavior:'smooth'});
@@ -427,26 +404,6 @@ function togglePoem(el){
 }
 </script>
 
-
-<!-- Comment Panel -->
-<aside class="comment-panel" id="comment-panel" style="pointer-events:none;opacity:0;">
-  <h3>诗 歌 推 荐</h3>
-  <div class="cp-intro">读到好的，请留在这里。</div>
-  <div id="cusdis_thread"
-    data-host="https://cusdis.com"
-    data-app-id="26905533-a52b-4b5a-9e2d-49728c043cdf"
-    data-page-id="poetry"
-    data-page-url="https://haozeli.cn"
-    data-page-title="诗歌 · 檐下"
-    data-theme="light"
-  ></div>
-  <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
-  <style>
-    /* Cusdis 在 iframe 内，但外层容器可以调整 */
-    #cusdis_thread{font-family:"Noto Serif SC",Georgia,serif !important;}
-    iframe[src*="cusdis"]{border-radius:0 !important;}
-  </style>
-</aside>
 
 </body>
 </html>
