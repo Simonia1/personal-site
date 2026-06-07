@@ -295,10 +295,10 @@ body{
 /* Music player */
 .music-row{
   display:flex;align-items:center;gap:16px;
-  margin-bottom:22px;cursor:pointer;
-  position:relative;
+  margin-bottom:8px;cursor:pointer;
+  position:relative;flex-wrap:wrap;
 }
-.music-cover{width:100px;height:100px;object-fit:cover;display:block;}
+.music-cover{width:100px;height:100px;object-fit:cover;display:block;flex-shrink:0;}
 .music-play{
   position:absolute;left:0;top:0;
   width:100px;height:100px;
@@ -308,11 +308,19 @@ body{
 }
 .music-row:hover .music-play{opacity:1;}
 .music-row.playing .music-play{opacity:1;background:rgba(160,82,60,0.5);}
-.music-row.playing .music-play:after{content:'⏸';}
-.music-row.playing .music-play{font-size:0;}
-.music-row.playing .music-play:after{font-size:1.2rem;}
+.music-row.playing .music-play:after{content:'⏸';font-size:1.2rem;}
 .music-title{font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;}
 .music-by{font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;}
+.music-bar{
+  width:100%;height:3px;margin-top:4px;margin-bottom:14px;
+  background:rgba(138,125,110,0.12);display:none;
+  cursor:pointer;position:relative;
+}
+.music-bar.show{display:block;}
+.music-bar-inner{
+  height:100%;background:rgba(160,82,60,0.5);
+  width:0;transition:width 0.3s linear;
+}
 
 ::selection{background:rgba(160,82,60,0.12);color:#2b2318;}
 </style>
@@ -488,18 +496,37 @@ function switchSection(name){
 function playSong(el){
   var player = document.getElementById('player');
   var src = el.getAttribute('data-src');
+  var bar = el.querySelector('.music-bar');
+  var barInner = el.querySelector('.music-bar-inner');
   var wasPlaying = !player.paused && player.src.indexOf(encodeURI(src)) > -1;
-  // Remove playing from all rows
+
+  // Hide all bars
+  document.querySelectorAll('.music-bar').forEach(function(b){b.classList.remove('show');});
   document.querySelectorAll('.music-row').forEach(function(r){r.classList.remove('playing');});
+
   if(wasPlaying){
     player.pause();
   } else {
     player.src = src;
-    player.play();
+    player.play().catch(function(){});
     el.classList.add('playing');
+    bar.classList.add('show');
+    // Update progress
+    clearInterval(player._interval);
+    player._interval = setInterval(function(){
+      if(player.duration){
+        barInner.style.width = (player.currentTime / player.duration * 100) + '%';
+      }
+    }, 200);
+    // Click bar to seek
+    bar.onclick = function(e){
+      if(!player.duration) return;
+      var pct = (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth;
+      player.currentTime = pct * player.duration;
+    };
   }
-  player.onended = function(){el.classList.remove('playing');};
-  player.onerror = function(){el.classList.remove('playing');};
+  player.onended = function(){el.classList.remove('playing');bar.classList.remove('show');clearInterval(player._interval);};
+  player.onerror = function(){el.classList.remove('playing');bar.classList.remove('show');};
 }
 
 function togglePoem(el){
