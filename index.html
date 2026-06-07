@@ -429,11 +429,15 @@ function togglePoem(el){
 <aside class="comment-panel" id="comment-panel">
   <h3>诗 歌 推 荐</h3>
   <div class="cp-intro">读到好的，请留在这里。</div>
-  <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;letter-spacing:0.04em;">
-  <textarea id="cf-content" placeholder="写下你推荐的诗……" maxlength="500" style="display:block;width:100%;padding:6px 10px;margin-bottom:8px;background:transparent;border:1px solid rgba(138,125,110,0.2);font-family:inherit;font-size:0.72rem;color:#2b2318;outline:none;height:72px;resize:vertical;letter-spacing:0.04em;"></textarea>
-  <button onclick="submitComment()" style="padding:4px 16px;background:transparent;border:1px solid rgba(160,82,60,0.3);color:#a0523c;font-family:inherit;font-size:0.68rem;letter-spacing:0.06em;cursor:pointer;margin-bottom:6px;">留 言</button>
-  <div id="cf-status" style="font-size:0.62rem;color:#a09080;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(138,125,110,0.12);"></div>
-  <div class="cp-empty" id="cp-empty">加载中……</div>
+  <div id="cusdis_thread"
+    data-host="https://cusdis.com"
+    data-app-id="26905533-a52b-4b5a-9e2d-49728c043cdf"
+    data-page-id="poetry"
+    data-page-url="https://haozeli.cn"
+    data-page-title="诗歌 · 檐下"
+    data-theme="light"
+  ></div>
+  <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 </aside>
 
 <script>
