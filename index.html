@@ -322,10 +322,86 @@ body{
   width:0;transition:width 0.3s linear;
 }
 
+/* Subscribe */
+.sub-btn{
+  position:fixed;top:16px;right:24px;
+  padding:5px 14px;
+  background:transparent;
+  border:1px solid rgba(160,82,60,0.3);
+  color:#a0523c;
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.68rem;letter-spacing:0.06em;
+  cursor:pointer;z-index:20;
+  transition:all 0.25s;
+}
+.sub-btn:hover{background:rgba(160,82,60,0.06);}
+.sub-overlay{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.3);z-index:100;
+  align-items:center;justify-content:center;
+}
+.sub-overlay.show{display:flex;}
+.sub-box{
+  background:#faf6f0;
+  padding:40px 36px;
+  max-width:380px;width:90%;
+  text-align:center;
+}
+.sub-box h3{
+  font-size:1rem;font-weight:600;
+  letter-spacing:0.04em;color:#2b2318;
+  margin-bottom:6px;
+}
+.sub-box p{
+  font-size:0.72rem;font-weight:300;color:#a09080;
+  letter-spacing:0.04em;margin-bottom:24px;
+}
+.sub-box input{
+  display:block;width:100%;
+  padding:8px 12px;margin-bottom:10px;
+  background:transparent;
+  border:1px solid rgba(138,125,110,0.2);
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.78rem;color:#2b2318;
+  outline:none;text-align:center;letter-spacing:0.04em;
+  transition:border-color 0.2s;
+}
+.sub-box input:focus{border-color:#a0523c;}
+.sub-box button{
+  padding:6px 20px;
+  background:transparent;
+  border:1px solid rgba(160,82,60,0.3);
+  color:#a0523c;
+  font-family:"Noto Serif SC",Georgia,serif;
+  font-size:0.72rem;letter-spacing:0.06em;
+  cursor:pointer;margin-top:4px;
+  transition:all 0.25s;
+}
+.sub-box button:hover{background:rgba(160,82,60,0.06);}
+.sub-msg{font-size:0.65rem;color:#a09080;margin-top:10px;}
+.sub-close{
+  margin-top:16px;font-size:0.65rem;color:#bbb;
+  cursor:pointer;background:none;border:none;
+}
+
 ::selection{background:rgba(160,82,60,0.12);color:#2b2318;}
 </style>
 </head>
 <body>
+
+<button class="sub-btn" onclick="openSub()">订阅</button>
+
+<!-- Subscribe overlay -->
+<div class="sub-overlay" id="sub-overlay" onclick="if(event.target===this)closeSub()">
+  <div class="sub-box">
+    <h3>邮件订阅</h3>
+    <p>更新后我会发邮件告诉你。</p>
+    <input type="email" id="sub-email" placeholder="你的邮箱" maxlength="60">
+    <button onclick="doSubscribe()">确 认</button>
+    <div class="sub-msg" id="sub-msg"></div>
+    <button class="sub-close" onclick="closeSub()">以后再说</button>
+  </div>
+</div>
 
 <aside class="sidebar">
   <div class="avatar"><img src="avatar.jpg" alt="avatar"></div>
@@ -545,6 +621,24 @@ function playSong(el){
   }
   player.onended = function(){el.classList.remove('playing');bar.classList.remove('show');clearInterval(player._interval);};
   player.onerror = function(){el.classList.remove('playing');bar.classList.remove('show');};
+}
+
+// Subscribe
+function openSub(){document.getElementById('sub-overlay').classList.add('show');}
+function closeSub(){document.getElementById('sub-overlay').classList.remove('show');}
+function doSubscribe(){
+  var email=document.getElementById('sub-email').value.trim();
+  var msg=document.getElementById('sub-msg');
+  if(!email||!/@/.test(email)){msg.textContent='请输入有效邮箱。';return;}
+  msg.textContent='提交中……';
+  fetch('https://cmrcjbhanwzqriwkvpof.supabase.co/rest/v1/Subscribers',{
+    method:'POST',
+    headers:{'apikey':'sb_publishable_jXRJy1km3NkcmEX8ocQXXg_i9Jb1fp2','Authorization':'Bearer sb_publishable_jXRJy1km3NkcmEX8ocQXXg_i9Jb1fp2','Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify({email:email})
+  }).then(function(r){
+    if(r.ok){msg.textContent='订阅成功！';document.getElementById('sub-email').value='';}
+    else{msg.textContent='可能已订阅过。';}
+  }).catch(function(){msg.textContent='网络错误，再试一次。';});
 }
 
 function togglePoem(el){
