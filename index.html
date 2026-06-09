@@ -158,7 +158,7 @@ body{
   max-height:0;
   transition:max-height 0.5s ease;
 }
-.poetry-content.open{max-height:2000px;}
+.poetry-content.open{overflow:visible;}
 .poetry-body{
   font-weight:300;line-height:2.4;
   letter-spacing:0.04em;
@@ -687,8 +687,15 @@ function doSubscribe(){
 function togglePoem(el){
   var toggle = el.querySelector('.toggle');
   var content = el.parentElement.querySelector('.poetry-content');
-  toggle.classList.toggle('open');
-  content.classList.toggle('open');
+  if(content.classList.contains('open')){
+    content.style.maxHeight = '0';
+    toggle.classList.remove('open');
+    content.classList.remove('open');
+  } else {
+    content.classList.add('open');
+    content.style.maxHeight = content.scrollHeight + 'px';
+    toggle.classList.add('open');
+  }
 }
 
 // Comment system (Supabase)
