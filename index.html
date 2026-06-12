@@ -390,68 +390,53 @@ body{
   cursor:pointer;background:none;border:none;
 }
 
+/* ===== NOTES GRID ==== */
+.notes-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
+}
+.note-card{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  background:#fff;
+  border-radius:14px;
+  padding:28px 26px 24px;
+  text-decoration:none;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05),0 4px 20px rgba(0,0,0,0.03);
+  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  cursor:pointer;
+}
+.note-card:hover{
+  transform:scale(1.03);
+  box-shadow:0 8px 30px rgba(0,0,0,0.10),0 12px 44px rgba(0,0,0,0.06);
+}
+.note-num{
+  font-size:0.62rem;
+  font-weight:700;
+  letter-spacing:0.14em;
+  color:#a0523c;
+}
+.note-title{
+  font-size:1.02rem;
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:#2b2318;
+  line-height:1.5;
+}
+.note-sub{
+  font-size:0.7rem;
+  font-weight:300;
+  color:#a09080;
+  line-height:1.6;
+  letter-spacing:0.03em;
+}
+@media(max-width:768px){
+  .notes-grid{grid-template-columns:1fr;}
+}
+
 ::selection{background:rgba(160,82,60,0.12);color:#2b2318;}
-	/* ===== NOTES GRID ==== */
-	.notes-grid{
-	  display:flex;
-	  flex-direction:column;
-	  gap:14px;
-	}
-	.note-card{
-	  display:flex;
-	  align-items:center;
-	  gap:16px;
-	  background:#fff;
-	  border-radius:10px;
-	  padding:18px 22px;
-	  text-decoration:none;
-	  box-shadow:0 1px 2px rgba(0,0,0,0.04),0 2px 8px rgba(0,0,0,0.03);
-	  border:1px solid rgba(138,125,110,0.1);
-	  border-left:4px solid rgba(160,82,60,0.35);
-	  transition:all 0.25s;
-	}
-	.note-card:hover{
-	  box-shadow:0 4px 16px rgba(0,0,0,0.08);
-	  border-left-color:#a0523c;
-	  border-left-width:5px;
-	  background:rgba(250,246,240,0.6);
-	  transform:translateX(4px);
-	}
-	.note-ico{
-	  font-size:1.3rem;
-	  flex-shrink:0;
-	  width:36px;text-align:center;
-	}
-	.note-num{
-	  font-size:0.65rem;
-	  font-weight:700;
-	  letter-spacing:0.12em;
-	  color:#a0523c;
-	  flex-shrink:0;
-	  min-width:88px;
-	}
-	.note-title{
-	  font-size:0.9rem;
-	  font-weight:600;
-	  letter-spacing:0.04em;
-	  color:#2b2318;
-	  flex-shrink:0;
-	  min-width:160px;
-	}
-	.note-sub{
-	  font-size:0.68rem;
-	  font-weight:300;
-	  color:#a09080;
-	  line-height:1.6;
-	  letter-spacing:0.03em;
-	  flex:1;
-	}
-
-	@media(max-width:768px){
-	  .note-card{flex-wrap:wrap;gap:6px 10px;padding:16px 18px;}
-	  .note-sub{flex:auto;width:100%;}
-	}
-
 </style>
 </head>
 <body>
@@ -671,40 +656,34 @@ body{
 
     <div class="notes-grid">
       <a class="note-card" href="notes/Lecture_7_Notes.pdf" target="_blank">
-        <span class="note-ico">&#x1F4D6;</span>
-        <span class="note-num">Lecture 7</span>
-        <span class="note-title">流体运动的微分分析导论</span>
-        <span class="note-sub">连续性方程 · 流函数 · N-S 方程推导</span>
+        <div class="note-num">Lecture 7</div>
+        <div class="note-title">流体运动的微分分析导论</div>
+        <div class="note-sub">连续性方程 · 流函数 · N-S 方程推导</div>
       </a>
       <a class="note-card" href="notes/Lecture_8_Notes.pdf" target="_blank">
-        <span class="note-ico">&#x1F4D6;</span>
-        <span class="note-num">Lecture 8</span>
-        <span class="note-title">不可压缩无粘流动</span>
-        <span class="note-sub">Bernoulli 方程 · Euler 方程 · 总压与静压</span>
+        <div class="note-num">Lecture 8</div>
+        <div class="note-title">不可压缩无粘流动</div>
+        <div class="note-sub">Bernoulli 方程 · Euler 方程 · 总压与静压</div>
       </a>
       <a class="note-card" href="notes/Lecture_9_Notes.pdf" target="_blank">
-        <span class="note-ico">&#x1F4D6;</span>
-        <span class="note-num">Lecture 9</span>
-        <span class="note-title">量纲分析与相似性</span>
-        <span class="note-sub">Buckingham Π 定理 · 雷诺数 · 模型试验</span>
+        <div class="note-num">Lecture 9</div>
+        <div class="note-title">量纲分析与相似性</div>
+        <div class="note-sub">Buckingham Π 定理 · 雷诺数 · 模型试验</div>
       </a>
       <a class="note-card" href="notes/Lecture_10_Notes.pdf" target="_blank">
-        <span class="note-ico">&#x1F4D6;</span>
-        <span class="note-num">Lecture 10</span>
-        <span class="note-title">充分发展层流与流量测量</span>
-        <span class="note-sub">Hagen-Poiseuille 定律 · Couette 流 · 流量计</span>
+        <div class="note-num">Lecture 10</div>
+        <div class="note-title">充分发展层流与流量测量</div>
+        <div class="note-sub">Hagen-Poiseuille 定律 · Couette 流 · 流量计</div>
       </a>
       <a class="note-card" href="notes/Lecture_11_Notes.pdf" target="_blank">
-        <span class="note-ico">&#x1F4D6;</span>
-        <span class="note-num">Lecture 11</span>
-        <span class="note-title">边界层基础</span>
-        <span class="note-sub">Blasius 精确解 · 动量积分方程 · 近似剖面</span>
+        <div class="note-num">Lecture 11</div>
+        <div class="note-title">边界层基础</div>
+        <div class="note-sub">Blasius 精确解 · 动量积分方程 · 近似剖面</div>
       </a>
       <a class="note-card" href="notes/Lecture_12_Notes.pdf" target="_blank">
-        <span class="note-ico">&#x1F4D6;</span>
-        <span class="note-num">Lecture 12</span>
-        <span class="note-title">地球物理流体力学导论</span>
-        <span class="note-sub">科里奥利力 · 旋转参考系 · 角动量守恒</span>
+        <div class="note-num">Lecture 12</div>
+        <div class="note-title">地球物理流体力学导论</div>
+        <div class="note-sub">科里奥利力 · 旋转参考系 · 角动量守恒</div>
       </a>
     </div>
   </section>
