@@ -432,8 +432,58 @@ body{
   line-height:1.6;
   letter-spacing:0.03em;
 }
+.note-featured{
+  display:block;
+  width:100%;
+  background:#fff;
+  border-radius:14px;
+  padding:32px 36px 28px;
+  text-decoration:none;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05),0 4px 20px rgba(0,0,0,0.03);
+  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  cursor:pointer;
+  margin-bottom:28px;
+  border-left:3px solid #a0523c;
+}
+.note-featured:hover{
+  transform:scale(1.01);
+  box-shadow:0 8px 30px rgba(0,0,0,0.10),0 12px 44px rgba(0,0,0,0.06);
+}
+.note-featured .note-num{
+  font-size:0.68rem;
+  font-weight:700;
+  letter-spacing:0.14em;
+  color:#a0523c;
+}
+.note-featured .note-title{
+  font-size:1.12rem;
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:#2b2318;
+  line-height:1.5;
+  margin-top:4px;
+}
+.note-featured .note-sub{
+  font-size:0.74rem;
+  font-weight:300;
+  color:#8a7d6e;
+  line-height:1.6;
+  letter-spacing:0.04em;
+  margin-top:6px;
+}
+.note-featured .note-tag{
+  display:inline-block;
+  font-size:0.6rem;
+  letter-spacing:0.08em;
+  color:#a0523c;
+  background:rgba(160,82,60,0.06);
+  padding:2px 10px;
+  border-radius:10px;
+  margin-bottom:6px;
+}
 @media(max-width:768px){
   .notes-grid{grid-template-columns:1fr;}
+  .note-featured{padding:24px 20px 20px;}
 }
 
 ::selection{background:rgba(160,82,60,0.12);color:#2b2318;}
@@ -474,6 +524,18 @@ body{
   <section class="section active" id="sect-daily">
     <div class="section-label">日 常</div>
     <div class="section-intro">一些小事。<br>向下滑动浏览往期动态。<br><span style="font-size:0.65rem;color:#bbb;">初次打开图片可能加载较慢，请耐心等待。</span></div>
+
+    <article class="entry">
+      <div class="entry-date">2026.07.21 23:52</div>
+      <div class="entry-body">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+          <img src="1e7cf129c33ed133ced0b012fec28b31.jpg" alt="" style="max-width:48%;flex:1;min-width:180px;">
+          <img src="34e552c8500b2c8897b58aa3a701f637.jpg" alt="" style="max-width:48%;flex:1;min-width:180px;">
+        </div>
+        <p>变成2和4之后还会更小吗</p>
+        <p>四人小队3小时艰难通过教学关</p>
+      </div>
+    </article>
 
     <article class="entry">
       <div class="entry-date">2026.06.12 13:50</div>
@@ -661,6 +723,13 @@ body{
     <div class="section-label">学 术</div>
     <div class="section-intro">加油。</div>
 
+    <a class="note-featured" href="notes/Lecture_11_Notes_v2.pdf" target="_blank">
+      <div class="note-tag">最新</div>
+      <div class="note-num">Lecture 11</div>
+      <div class="note-title">边界层基础</div>
+      <div class="note-sub">Blasius 精确解 · 动量积分方程 · 近似剖面</div>
+    </a>
+
     <div class="notes-grid">
       <a class="note-card" href="notes/Lecture_7_Notes.pdf" target="_blank">
         <div class="note-num">Lecture 7</div>
@@ -681,11 +750,6 @@ body{
         <div class="note-num">Lecture 10</div>
         <div class="note-title">充分发展层流与流量测量</div>
         <div class="note-sub">Hagen-Poiseuille 定律 · Couette 流 · 流量计</div>
-      </a>
-      <a class="note-card" href="notes/Lecture_11_Notes.pdf" target="_blank">
-        <div class="note-num">Lecture 11</div>
-        <div class="note-title">边界层基础</div>
-        <div class="note-sub">Blasius 精确解 · 动量积分方程 · 近似剖面</div>
       </a>
       <a class="note-card" href="notes/Lecture_12_Notes.pdf" target="_blank">
         <div class="note-num">Lecture 12</div>
