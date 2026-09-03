@@ -3,579 +3,545 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <title>Simon</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:,">
 <style>
-/* ===== RESET ===== */
+/* ===== tokens ===== */
+:root{
+  --bg:#f4f2ec;
+  --card:rgba(253,252,249,0.86);
+  --card-solid:#faf8f4;
+  --border:rgba(45,42,36,0.1);
+  --border-strong:rgba(45,42,36,0.22);
+  --text:#3a3833;
+  --text-strong:#23211d;
+  --muted:#6e6a60;
+  --faint:#9a958b;
+  --accent:#b07a1c;
+  --accent-soft:rgba(176,122,28,0.1);
+  --accent-line:rgba(176,122,28,0.45);
+  --teal:#3ca2a2;
+  --pingfang:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --mono:var(--pingfang);
+  --serif:var(--pingfang);
+  --bg-image:url("bg.jpg"); /* ← 想换背景图改这里 */
+}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:19px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
+html{font-size:17px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
 body{
-  background:#faf6f0;
-  color:#2b2318;
-  font-family:"Noto Serif SC",Georgia,"Songti SC","SimSun",serif;
-  line-height:2.0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--serif);
+  line-height:1.95;
   min-height:100vh;
-  display:flex;
 }
+/* 一整张全屏背景图 + 暗色遮罩 */
+.bg-photo{
+  position:fixed;inset:0;z-index:-2;
+  background:var(--bg-image) center/cover no-repeat;
+}
+.bg-veil{
+  position:fixed;inset:0;z-index:-1;
+  background:
+    linear-gradient(to bottom, rgba(248,247,242,0.55) 0%, rgba(248,247,242,0.68) 45%, rgba(248,247,242,0.8) 100%);
+}
+::selection{background:var(--accent-soft);color:var(--text-strong);}
+a{color:var(--accent);text-decoration:none;transition:color .2s;}
+img{max-width:100%;}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:rgba(45,42,36,0.22);border-radius:5px;}
+::-webkit-scrollbar-track{background:rgba(45,42,36,0.06);}
 
-/* ===== SIDEBAR ===== */
-.sidebar{
-  width:220px;
-  min-height:100vh;
-  padding:48px 32px 40px;
-  display:flex;
-  flex-direction:column;
-  position:fixed;
-  top:0;left:0;bottom:0;
-  border-right:1px solid rgba(138,125,110,0.12);
-  background:#faf6f0;
-  z-index:10;
+/* ===== header ===== */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(250,249,245,0.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-top:3px solid var(--teal);
+  border-bottom:1px solid var(--border);
 }
-
-/* Avatar placeholder */
-.avatar{
-  width:160px;height:160px;
-  border:1.5px solid rgba(160,82,60,0.25);
-  margin-bottom:24px;
-  background:rgba(160,82,60,0.04);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#a09080;
-  font-size:0.85rem;
-  letter-spacing:0.04em;
-  overflow:hidden;
+.header-inner{
+  max-width:820px;margin:0 auto;
+  padding:16px 24px;
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 }
-.avatar img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;}
-
-.site-name{
-  font-size:1.15rem;
-  font-weight:700;
-  letter-spacing:0.08em;
-  color:#2b2318;
-  margin-bottom:2px;
+.site-title{
+  font-size:1.05rem;font-weight:700;
+  letter-spacing:0.16em;
+  color:var(--text-strong);
+  white-space:nowrap;
 }
-.site-sub{
-  font-size:0.7rem;
-  font-weight:300;
-  color:#a09080;
-  letter-spacing:0.06em;
-  margin-bottom:40px;
+.site-title em{
+  font-family:var(--mono);font-style:normal;font-weight:300;
+  font-size:0.64rem;color:var(--faint);
+  letter-spacing:0.08em;margin-left:10px;
 }
-
-/* Nav */
-.nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+.nav{display:flex;gap:4px;flex-wrap:wrap;}
 .nav a{
-  display:block;
-  padding:8px 12px;
-  font-size:0.9rem;
-  font-weight:400;
-  color:#8a7d6e;
-  text-decoration:none;
-  letter-spacing:0.06em;
-  border-radius:4px;
-  transition:color 0.25s,background 0.25s;
+  font-family:var(--mono);
+  font-size:0.74rem;
+  letter-spacing:0.04em;
+  color:var(--muted);
+  padding:3px 10px;border-radius:4px;
+  transition:color .2s,background .2s;
   cursor:pointer;
 }
-.nav a:hover{color:#2b2318;background:rgba(160,82,60,0.04);}
-.nav a.active{color:#a0523c;font-weight:600;background:rgba(160,82,60,0.06);}
+.nav a::before{content:'/';color:var(--faint);margin-right:1px;transition:color .2s;}
+.nav a:hover{color:#141310;}
+.nav a:hover::before{color:var(--accent);}
+.nav a.active{color:var(--accent);}
+.nav a.active::before{color:var(--accent);}
 
-/* ===== MAIN CONTENT ===== */
-.main{
-  margin-left:220px;
-  flex:1;
-  padding:72px 64px 80px 64px;
-  max-width:900px;
+/* ===== centered column ===== */
+.wrap{
+  max-width:820px;margin:0 auto;
+  padding:52px 24px 72px;
 }
+
 .section{display:none;}
-.section.active{display:block;animation:fadeIn 0.5s ease;}
+.section.active{display:block;}
+.section.active>*{animation:rise .55s cubic-bezier(.22,.61,.36,1) both;}
+.section.active>*:nth-child(1){animation-delay:.03s;}
+.section.active>*:nth-child(2){animation-delay:.09s;}
+.section.active>*:nth-child(3){animation-delay:.15s;}
+.section.active>*:nth-child(4){animation-delay:.21s;}
+.section.active>*:nth-child(5){animation-delay:.27s;}
+.section.active>*:nth-child(6){animation-delay:.33s;}
+.section.active>*:nth-child(7){animation-delay:.39s;}
+.section.active>*{animation-delay:.15s;}
+.section.leaving{display:block;animation:sink .2s ease both;}
+@keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+@keyframes sink{from{opacity:1;}to{opacity:0;transform:translateY(-10px);}}
 
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(10px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* ===== SECTION STYLES ===== */
+.section-head{margin-bottom:38px;text-align:center;}
 .section-label{
-  font-size:1.5rem;
-  font-weight:600;
-  letter-spacing:0.08em;
-  color:#2b2318;
-  margin-bottom:2px;
+  font-size:1.5rem;font-weight:600;
+  letter-spacing:0.5em;text-indent:0.5em;
+  color:var(--text-strong);
+  display:inline-block;
+}
+.section-label::after{
+  content:'';display:block;
+  width:56px;height:2px;margin:14px auto 0;
+  background:var(--accent);
+  border-radius:1px;
 }
 .section-intro{
-  font-size:0.78rem;
-  font-weight:300;
-  color:#a09080;
-  letter-spacing:0.04em;
-  margin-bottom:36px;
+  font-family:var(--mono);
+  font-size:0.68rem;font-weight:300;
+  color:var(--muted);letter-spacing:0.08em;
+  margin-top:14px;line-height:2;
 }
 
-/* Poetry block */
-.poetry-block{
-  margin-bottom:56px;
-  padding:0 0 0 28px;
-  border-left:1px solid rgba(160,82,60,0.2);
-  position:relative;
+/* ===== cards / entries ===== */
+.entry{
+  background:var(--card);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:26px 30px;
+  margin-bottom:24px;
+  transition:border-color .25s;
 }
-.poetry-block::before{
-  content:'';
-  position:absolute;
-  left:-1px;top:0;
-  width:1px;height:40px;
-  background:#a0523c;
-}
-.poetry-title{
-  font-size:1.1rem;font-weight:600;
-  letter-spacing:0.06em;
-  margin-bottom:4px;
-  cursor:pointer;
-  user-select:none;
+.entry:hover{border-color:var(--border-strong);}
+.entry-date{
+  font-family:var(--mono);
+  font-size:0.68rem;
+  letter-spacing:0.12em;
+  color:var(--accent);
+  margin-bottom:12px;
   display:flex;align-items:center;gap:10px;
 }
-.poetry-title .toggle{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:20px;height:20px;
-  font-size:1rem;font-weight:300;
-  color:#a0523c;
-  transition:transform 0.3s;
-  flex-shrink:0;
-}
-.poetry-title .toggle.open{transform:rotate(45deg);}
-.poetry-author{
-  font-size:0.78rem;font-weight:300;
-  color:#8a7d6e;
-  letter-spacing:0.06em;
-  margin-bottom:0;
-}
-.poetry-content{
+.entry-date::after{content:'';flex:0 0 28px;height:1px;background:var(--accent-line);}
+.entry-body{font-weight:300;font-size:0.94rem;color:var(--text);}
+.entry-body p{margin-bottom:10px;}
+.entry-body p:last-child{margin-bottom:0;}
+.entry-body img{border-radius:6px;display:block;}
+.entry-divider{height:1px;background:var(--border);margin:16px 0;}
+.entry-gallery{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 12px;}
+.entry-gallery img{flex:1;min-width:180px;max-width:48%;height:auto;object-fit:cover;}
+
+/* ===== poetry ===== */
+.poem{
+  background:var(--card);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:18px;
   overflow:hidden;
-  max-height:0;
-  transition:max-height 0.5s ease;
+  transition:border-color .25s;
 }
-.poetry-content.open{overflow:visible;}
-.poetry-body{
-  font-weight:300;line-height:2.4;
-  letter-spacing:0.04em;
-  color:#3a3028;
-  text-wrap:pretty;
-  padding-top:18px;
+.poem:hover{border-color:var(--border-strong);}
+.poem-head{
+  padding:20px 26px;
+  cursor:pointer;user-select:none;
+  display:flex;align-items:baseline;gap:14px;
 }
-.poetry-body p{margin-bottom:10px;}
-.poetry-source{
-  margin-top:16px;
-  font-size:0.72rem;
-  color:#a09080;
-  font-style:italic;
+.poem-toggle{
+  font-family:var(--mono);
+  font-size:0.85rem;font-weight:300;
+  color:var(--accent);
+  width:1em;flex-shrink:0;
+  transition:transform .3s;
 }
-
-/* ===== COMMENT PANEL (right side) ===== */
-.comment-panel{
-  position:fixed;right:0;top:0;
-  width:300px;height:100vh;
-  background:rgba(250,246,240,0.97);
-  border-left:1px solid rgba(138,125,110,0.12);
-  padding:48px 22px 40px;
-  z-index:5;
-  overflow-y:auto;
-  font-family:"Noto Serif SC",Georgia,serif;
+.poem.open .poem-toggle{transform:rotate(45deg);}
+.poem-title{
+  font-size:1.05rem;font-weight:600;
+  letter-spacing:0.08em;color:var(--text-strong);
 }
-.comment-panel h3{
-  font-size:0.85rem;font-weight:600;
-  letter-spacing:0em;color:#2b2318;
-  margin-bottom:24px;
+.poem-author{
+  margin-left:auto;
+  font-family:var(--mono);
+  font-size:0.62rem;font-weight:300;
+  color:var(--faint);letter-spacing:0.05em;
+  white-space:nowrap;
 }
-.comment-panel input,.comment-panel textarea{
-  display:block;width:100%;
-  padding:8px 10px;margin-bottom:10px;
-  background:transparent;
-  border:1px solid rgba(138,125,110,0.2);
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.72rem;color:#2b2318;
-  outline:none;letter-spacing:0.04em;
-  transition:border-color 0.2s;
+.poem-body-wrap{max-height:0;overflow:hidden;transition:max-height .5s ease;}
+.poem-body{
+  padding:18px 28px 24px 54px;
+  font-weight:300;line-height:2.35;
+  letter-spacing:0.05em;
+  color:var(--text);
+  border-top:1px dashed var(--border);
 }
-.comment-panel input:focus,.comment-panel textarea:focus{border-color:#a0523c;}
-.comment-panel textarea{height:68px;resize:vertical;}
-.comment-panel .cp-btn{
-  padding:5px 18px;background:transparent;
-  border:1px solid rgba(160,82,60,0.3);color:#a0523c;
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.7rem;letter-spacing:0.06em;
-  cursor:pointer;margin-bottom:16px;
-  transition:all 0.25s;
-}
-.comment-panel .cp-btn:hover{background:rgba(160,82,60,0.06);}
-.comment-panel .cp-msg{
-  font-size:0.62rem;color:#a09080;
-  margin-bottom:14px;padding-bottom:14px;
-  border-bottom:1px solid rgba(138,125,110,0.12);
-}
-.comment-panel .cp-item{
-  margin-bottom:12px;padding-bottom:12px;
-  border-bottom:1px solid rgba(138,125,110,0.06);
-}
-.comment-panel .cp-name{
-  font-size:0.82rem;font-weight:600;color:#5a4e40;
-}
-.comment-panel .cp-content{
-  font-size:0.68rem;font-weight:300;color:#3a3028;
-  line-height:1.7;margin-top:4px;
-}
-.comment-panel .cp-date{
-  font-size:0.62rem;color:#bbb;margin-top:4px;
-}
-.comment-panel .cp-empty{
-  font-size:0.7rem;font-weight:300;color:#bbb;
-  font-style:italic;text-align:center;margin-top:24px;
-}
-/* Entry */
-.entry{
-  background:#fff;
-  border-radius:10px;
-  padding:28px 32px;
-  margin-bottom:24px;
-  box-shadow:0 1px 4px rgba(0,0,0,0.05),0 2px 12px rgba(0,0,0,0.03);
-  width:fit-content;
-  max-width:100%;
-}
-.entry:last-of-type{margin-bottom:0;}
-.entry-date{
-  font-size:0.72rem;letter-spacing:0.1em;
-  color:#a09080;margin-bottom:6px;
-}
-.entry-title{
-  font-size:1.15rem;font-weight:600;
-  letter-spacing:0.04em;
-  margin-bottom:12px;
-  text-wrap:pretty;
-}
-.entry-body{
-  font-weight:300;color:#3a3028;
-  text-wrap:pretty;
-}
-.entry-body p{margin-bottom:12px;}
-.entry-tags{
-  display:flex;gap:14px;margin-top:14px;
-  font-size:0.68rem;letter-spacing:0.06em;
-}
-.entry-tags span{color:#a09080;}
-
-/* ===== MOBILE ===== */
-@media(max-width:768px){
-  body{flex-direction:column;}
-  .sidebar{
-    position:relative;
-    width:100%;min-height:auto;
-    flex-direction:row;flex-wrap:wrap;
-    align-items:center;
-    padding:16px 20px 14px;
-    border-right:none;
-    border-bottom:1px solid rgba(138,125,110,0.12);
-    gap:10px;
-    background:#faf6f0;
-  }
-  .avatar{width:44px;height:44px;margin-bottom:0;}
-  .avatar img{width:100%;height:100%;object-fit:cover;}
-  .site-name{font-size:0.9rem;margin-bottom:0;}
-  .site-sub{font-size:0.62rem;color:#a09080;margin-bottom:0;display:block;}
-  .nav{flex-direction:row;gap:2px;flex:0;width:100%;margin-top:4px;}
-  .nav a{padding:4px 10px;font-size:0.72rem;display:inline-block;}
-  .main{margin-left:0;padding:28px 18px 60px;max-width:100%;}
-  .poetry-block{padding:0 0 0 16px;}
-  .section-label{font-size:1.2rem;}
-  .comment-panel{
-    position:relative;width:100%;height:auto;
-    margin-top:32px;border-left:none;border-top:1px solid rgba(138,125,110,0.12);
-    padding:24px 18px;display:block;
-  }
+.poem-body p{margin-bottom:6px;}
+.poem-source{
+  font-family:var(--mono);
+  font-size:0.62rem;color:var(--faint);
+  font-weight:300;margin-top:14px;line-height:1.8;
 }
 
-/* Music player */
-.music-row{
-  display:flex;align-items:center;gap:16px;
-  margin-bottom:8px;cursor:pointer;
-  position:relative;flex-wrap:wrap;
+/* ===== music ===== */
+.track{
+  display:flex;align-items:center;gap:18px;
+  padding:14px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  border:1px solid transparent;
+  transition:background .2s,border-color .2s;
 }
-.music-cover{width:100px;height:100px;object-fit:cover;display:block;flex-shrink:0;}
-.music-play{
-  position:absolute;left:0;top:0;
-  width:100px;height:100px;
+.track:hover{background:rgba(45,42,36,0.035);border-color:var(--border);}
+.track.playing{background:rgba(45,42,36,0.05);border-color:var(--border);}
+.track-cover{
+  width:64px;height:64px;flex-shrink:0;
+  border-radius:6px;object-fit:cover;display:block;
+  filter:saturate(0.9);
+  transition:filter .2s;
+}
+.track:hover .track-cover{filter:saturate(1);}
+.track{position:relative;}
+.track-play{
+  position:absolute;
+  width:64px;height:64px;border-radius:6px;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,0.35);color:#fff;
-  font-size:1.4rem;opacity:0;transition:opacity 0.2s;
+  background:rgba(10,12,16,0.45);
+  color:#fff;font-size:1.05rem;
+  opacity:0;transition:opacity .2s;
 }
-.music-row:hover .music-play{opacity:1;}
-.music-row.playing .music-play{opacity:1;background:rgba(160,82,60,0.5);}
-.music-row.playing .music-play:after{content:'⏸';font-size:1.2rem;}
-.music-title{font-size:0.95rem;font-weight:600;letter-spacing:0.04em;color:#2b2318;}
-.music-by{font-size:0.75rem;font-weight:300;color:#8a7d6e;letter-spacing:0.04em;}
-.music-bar{
-  width:100%;height:3px;margin-top:4px;margin-bottom:14px;
-  background:rgba(138,125,110,0.12);display:none;
-  cursor:pointer;position:relative;
+.track:hover .track-play{opacity:1;}
+.track.playing .track-play{opacity:1;background:rgba(231,169,34,0.35);}
+.track.playing .track-play::after{content:'❚❚';font-size:0.7rem;letter-spacing:2px;}
+.track-meta{flex:1;min-width:0;}
+.track-title{
+  font-size:0.98rem;font-weight:600;
+  letter-spacing:0.05em;color:var(--text-strong);
 }
-.music-bar.show{display:block;}
-.music-bar-inner{
-  height:100%;background:rgba(160,82,60,0.5);
-  width:0;transition:width 0.3s linear;
+.track.playing .track-title{color:var(--accent);}
+.track-by{
+  font-family:var(--mono);
+  font-size:0.66rem;font-weight:300;
+  color:var(--muted);letter-spacing:0.06em;margin-top:2px;
+}
+.track-bar{
+  height:2px;margin-top:10px;
+  background:rgba(45,42,36,0.14);
+  border-radius:1px;cursor:pointer;
+  display:none;
+}
+.track-bar.show{display:block;}
+.track-bar-inner{height:100%;width:0;background:var(--accent);border-radius:1px;}
+.track-index{
+  font-family:var(--mono);
+  font-size:0.62rem;color:var(--faint);
+  width:2ch;text-align:right;flex-shrink:0;
 }
 
-/* Subscribe */
-.sub-btn{
-  position:fixed;top:16px;right:24px;
-  padding:5px 18px;
-  background:transparent;
-  border:1px solid rgba(160,82,60,0.4);
-  border-radius:6px;
-  color:#8a5a3c;
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.7rem;letter-spacing:0.06em;
-  cursor:pointer;z-index:20;
-  transition:all 0.25s;
+/* ===== academic ===== */
+.note-featured{
+  display:block;
+  background:var(--card);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--border);
+  border-left:2px solid var(--accent);
+  border-radius:8px;
+  padding:26px 30px;
+  margin-bottom:22px;
+  transition:border-color .25s,transform .25s;
 }
-.sub-btn:hover{background:rgba(160,82,60,0.06);}
+.note-featured:hover{transform:translateY(-2px);border-color:var(--accent-line);border-left-color:var(--accent);}
+.note-num{
+  font-family:var(--mono);
+  font-size:0.62rem;font-weight:500;
+  letter-spacing:0.16em;
+  color:var(--accent);
+}
+.note-title{
+  font-size:1.08rem;font-weight:600;
+  letter-spacing:0.05em;color:var(--text-strong);
+  margin-top:6px;line-height:1.6;
+}
+.note-sub{
+  font-family:var(--mono);
+  font-size:0.64rem;font-weight:300;
+  color:var(--muted);letter-spacing:0.04em;
+  margin-top:6px;line-height:1.8;
+}
+.notes-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;
+}
+.note-card{
+  display:block;
+  background:var(--card);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:22px 24px 20px;
+  transition:border-color .25s,transform .25s;
+}
+.note-card:hover{transform:translateY(-2px);border-color:var(--accent-line);}
+.note-card .note-title{font-size:0.95rem;}
+
+/* ===== poetry 留言（内嵌卡片） ===== */
+.comment-card{
+  background:var(--card);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:24px 28px;
+  margin-top:34px;
+}
+.comment-card h3{
+  font-family:var(--mono);
+  font-size:0.66rem;font-weight:500;
+  letter-spacing:0.2em;color:var(--faint);
+  margin-bottom:16px;
+}
+.comment-card input,.comment-card textarea{
+  display:block;width:100%;
+  padding:9px 14px;margin-bottom:10px;
+  background:rgba(255,255,255,0.72);
+  border:1px solid rgba(173,81,45,0.28);
+  border-radius:6px;
+  font-family:var(--serif);
+  font-size:0.74rem;color:var(--text);
+  outline:none;letter-spacing:0.04em;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+  resize:vertical;
+}
+.comment-card input::placeholder,.comment-card textarea::placeholder{color:#b0a89c;}
+.comment-card input:focus,.comment-card textarea:focus{
+  border-color:#ad512d;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(173,81,45,0.12);
+}
+.comment-card textarea{height:64px;}
+.cp-btn{
+  padding:5px 20px;
+  background:transparent;
+  border:1px solid rgba(173,81,45,0.5);
+  border-radius:6px;
+  color:#ad512d;
+  font-family:var(--mono);font-size:0.66rem;letter-spacing:0.12em;
+  cursor:pointer;transition:all .2s;
+}
+.cp-btn:hover{background:rgba(173,81,45,0.08);border-color:#ad512d;}
+.cp-msg{font-size:0.62rem;color:var(--faint);margin:10px 0;}
+.cp-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.cp-item:last-child{border-bottom:none;}
+.cp-name{font-size:0.76rem;font-weight:600;color:var(--text-strong);}
+.cp-content{font-size:0.74rem;font-weight:300;color:var(--muted);line-height:1.9;margin-top:3px;}
+.cp-date{font-family:var(--mono);font-size:0.58rem;color:var(--faint);margin-top:4px;}
+.cp-empty{font-size:0.72rem;font-weight:300;color:var(--faint);font-style:italic;}
+
+/* ===== footer ===== */
+.site-footer{
+  border-top:1px solid var(--border);
+  background:rgba(250,249,245,0.9);
+  margin-top:40px;
+}
+.footer-inner{
+  max-width:820px;margin:0 auto;
+  padding:26px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-family:var(--mono);
+  font-size:0.64rem;color:var(--faint);letter-spacing:0.06em;
+}
+.footer-links{display:flex;gap:20px;align-items:center;}
+.footer-links a{color:var(--muted);display:inline-flex;align-items:center;gap:6px;}
+.footer-links a:hover{color:var(--accent);}
+.footer-links svg{width:13px;height:13px;fill:currentColor;}
+
+/* subscribe */
+.sub-btn{
+  font-family:var(--mono);
+  font-size:0.64rem;letter-spacing:0.1em;
+  padding:4px 14px;
+  background:transparent;
+  border:1px solid var(--accent-line);
+  border-radius:4px;
+  color:var(--accent);
+  cursor:pointer;transition:all .2s;
+}
+.sub-btn:hover{background:var(--accent-soft);}
 .sub-overlay{
-  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
-  background:rgba(0,0,0,0.3);z-index:100;
-  align-items:center;justify-content:center;
+  display:none;position:fixed;inset:0;
+  background:rgba(45,42,36,0.35);
+  backdrop-filter:blur(4px);
+  z-index:100;align-items:center;justify-content:center;
 }
 .sub-overlay.show{display:flex;}
 .sub-box{
-  background:#faf6f0;
-  padding:40px 36px;
+  background:var(--card-solid);
+  border:1px solid var(--border-strong);
+  padding:38px 36px 32px;
   max-width:380px;width:90%;
-  text-align:center;
-  border-radius:8px;
+  text-align:center;border-radius:10px;
 }
-.sub-box h3{
-  font-size:1rem;font-weight:600;
-  letter-spacing:0.04em;color:#2b2318;
-  margin-bottom:6px;
-}
-.sub-box p{
-  font-size:0.72rem;font-weight:300;color:#a09080;
-  letter-spacing:0.04em;margin-bottom:24px;
-}
+.sub-box h3{font-size:1rem;font-weight:600;letter-spacing:0.1em;color:var(--text-strong);margin-bottom:6px;}
+.sub-box p{font-size:0.72rem;font-weight:300;color:var(--muted);margin-bottom:22px;}
 .sub-box input{
   display:block;width:100%;
-  padding:8px 12px;margin-bottom:10px;
-  background:transparent;
-  border:1px solid rgba(138,125,110,0.2);
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.78rem;color:#2b2318;
-  outline:none;text-align:center;letter-spacing:0.04em;
-  transition:border-color 0.2s;
+  padding:10px 14px;margin-bottom:10px;
+  background:rgba(255,255,255,0.7);
+  border:1px solid rgba(173,81,45,0.28);border-radius:6px;
+  font-family:var(--mono);font-size:0.74rem;color:var(--text);
+  outline:none;text-align:center;
+  transition:border-color .2s,box-shadow .2s,background .2s;
 }
-.sub-box input:focus{border-color:#a0523c;}
-.sub-box button{
-  padding:6px 20px;
-  background:transparent;
-  border:1px solid rgba(160,82,60,0.3);
-  color:#a0523c;
-  font-family:"Noto Serif SC",Georgia,serif;
-  font-size:0.72rem;letter-spacing:0.06em;
-  cursor:pointer;margin-top:4px;
-  transition:all 0.25s;
+.sub-box input::placeholder{color:#b0a89c;}
+.sub-box input:focus{
+  border-color:#ad512d;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(173,81,45,0.12);
 }
-.sub-box button:hover{background:rgba(160,82,60,0.06);}
-.sub-msg{font-size:0.65rem;color:#a09080;margin-top:10px;}
+.sub-box .sub-go{
+  padding:6px 24px;margin-top:6px;
+  background:transparent;border:1px solid rgba(173,81,45,0.5);border-radius:6px;
+  color:#ad512d;font-family:var(--mono);font-size:0.68rem;letter-spacing:0.1em;
+  cursor:pointer;transition:all .2s;
+}
+.sub-box .sub-go:hover{background:rgba(173,81,45,0.08);border-color:#ad512d;}
+.sub-msg{font-size:0.64rem;color:var(--muted);margin-top:10px;min-height:1em;}
 .sub-close{
-  margin-top:16px;font-size:0.65rem;color:#bbb;
-  cursor:pointer;background:none;border:none;
+  margin-top:14px;font-size:0.62rem;color:var(--faint);
+  cursor:pointer;background:none;border:none;font-family:var(--mono);
 }
+.sub-close:hover{color:var(--muted);}
 
-/* ===== NOTES GRID ==== */
-.notes-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:20px;
+/* ===== mobile ===== */
+@media(max-width:720px){
+  .wrap{padding:32px 16px 52px;}
+  .header-inner{padding:12px 16px;flex-wrap:wrap;}
+  .site-title{font-size:0.92rem;}
+  .site-title em{display:none;}
+  .nav a{padding:3px 8px;}
+  .entry{padding:20px 18px;}
+  .poem-head{padding:16px 18px;}
+  .poem-body{padding:16px 18px 20px 36px;}
+  .poem-author{display:none;}
+  .entry-gallery img{max-width:100%;}
 }
-.note-card{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  background:#fff;
-  border-radius:14px;
-  padding:28px 26px 24px;
-  text-decoration:none;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05),0 4px 20px rgba(0,0,0,0.03);
-  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
-  cursor:pointer;
-}
-.note-card:hover{
-  transform:scale(1.03);
-  box-shadow:0 8px 30px rgba(0,0,0,0.10),0 12px 44px rgba(0,0,0,0.06);
-}
-.note-num{
-  font-size:0.62rem;
-  font-weight:700;
-  letter-spacing:0.14em;
-  color:#a0523c;
-}
-.note-title{
-  font-size:1.02rem;
-  font-weight:600;
-  letter-spacing:0.04em;
-  color:#2b2318;
-  line-height:1.5;
-}
-.note-sub{
-  font-size:0.7rem;
-  font-weight:300;
-  color:#a09080;
-  line-height:1.6;
-  letter-spacing:0.03em;
-}
-.note-featured{
-  display:block;
-  width:100%;
-  background:#fff;
-  border-radius:14px;
-  padding:32px 36px 28px;
-  text-decoration:none;
-  box-shadow:0 2px 8px rgba(0,0,0,0.05),0 4px 20px rgba(0,0,0,0.03);
-  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
-  cursor:pointer;
-  margin-bottom:28px;
-  border-left:3px solid #a0523c;
-}
-.note-featured:hover{
-  transform:scale(1.01);
-  box-shadow:0 8px 30px rgba(0,0,0,0.10),0 12px 44px rgba(0,0,0,0.06);
-}
-.note-featured .note-num{
-  font-size:0.68rem;
-  font-weight:700;
-  letter-spacing:0.14em;
-  color:#a0523c;
-}
-.note-featured .note-title{
-  font-size:1.12rem;
-  font-weight:600;
-  letter-spacing:0.04em;
-  color:#2b2318;
-  line-height:1.5;
-  margin-top:4px;
-}
-.note-featured .note-sub{
-  font-size:0.74rem;
-  font-weight:300;
-  color:#8a7d6e;
-  line-height:1.6;
-  letter-spacing:0.04em;
-  margin-top:6px;
-}
-.note-featured .note-tag{
-  display:inline-block;
-  font-size:0.6rem;
-  letter-spacing:0.08em;
-  color:#a0523c;
-  background:rgba(160,82,60,0.06);
-  padding:2px 10px;
-  border-radius:10px;
-  margin-bottom:6px;
-}
-@media(max-width:768px){
-  .notes-grid{grid-template-columns:1fr;}
-  .note-featured{padding:24px 20px 20px;}
-}
-
-::selection{background:rgba(160,82,60,0.12);color:#2b2318;}
 </style>
 </head>
 <body>
 
-<button class="sub-btn" onclick="openSub()">订阅</button>
+<div class="bg-photo"></div>
+<div class="bg-veil"></div>
 
-<!-- Subscribe overlay -->
-<div class="sub-overlay" id="sub-overlay" onclick="if(event.target===this)closeSub()">
-  <div class="sub-box">
-    <h3>邮件订阅</h3>
-    <p>更新后我会发邮件告诉你。</p>
-    <input type="email" id="sub-email" placeholder="你的邮箱" maxlength="60">
-    <button onclick="doSubscribe()">确 认</button>
-    <div class="sub-msg" id="sub-msg"></div>
-    <button class="sub-close" onclick="closeSub()">以后再说</button>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-title">Simon<em>blog.haozeli.cn</em></a>
+    <nav class="nav">
+      <a class="active" data-nav="daily">日常</a>
+      <a data-nav="poetry">诗歌</a>
+      <a data-nav="music">音乐</a>
+      <a data-nav="academic">学术</a>
+    </nav>
   </div>
-</div>
+</header>
 
-<aside class="sidebar">
-  <div class="avatar"><img src="avatar.jpg" alt="avatar"></div>
-  <div class="site-name">檐下</div>
-  <div class="site-sub">Simon</div>
-
-  <nav class="nav">
-    <a class="active" onclick="switchSection('daily')">日常</a>
-    <a onclick="switchSection('poetry')">诗歌</a>
-    <a onclick="switchSection('music')">音乐</a>
-    <a onclick="switchSection('academic')">学术</a>
-  </nav>
-</aside>
-
-<div class="main">
+<div class="wrap">
 
   <!-- 日常 -->
   <section class="section active" id="sect-daily">
-    <div class="section-label">日 常</div>
-    <div class="section-intro">一些小事。<br>向下滑动浏览往期动态。<br><span style="font-size:0.65rem;color:#bbb;">初次打开图片可能加载较慢，请耐心等待。</span></div>
+    <div class="section-head">
+      <h1 class="section-label">日常</h1>
+      <div class="section-intro">一些小事。往下滑动浏览往期动态。<br>初次打开图片可能加载较慢，请耐心等待。</div>
+    </div>
 
     <article class="entry">
-      <div class="entry-date">2026.07.21 23:52</div>
+      <div class="entry-date">2026.07.21 · 23:52</div>
       <div class="entry-body">
-        <img src="1e7cf129c33ed133ced0b012fec28b31.jpg" alt="" style="max-width:320px;height:auto;display:block;margin-bottom:8px;">
+        <img src="1e7cf129c33ed133ced0b012fec28b31.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
         <p>变成2和4之后还会更小吗</p>
-        <img src="34e552c8500b2c8897b58aa3a701f637.jpg" alt="" style="max-width:320px;height:auto;display:block;margin-bottom:8px;margin-top:16px;">
+        <div class="entry-divider"></div>
+        <img src="34e552c8500b2c8897b58aa3a701f637.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
         <p>四人小队3小时艰难通过教学关</p>
       </div>
     </article>
 
     <article class="entry">
-      <div class="entry-date">2026.06.12 13:50</div>
+      <div class="entry-date">2026.06.12 · 13:50</div>
       <div class="entry-body">
         <p>为啥提前一个月复习都复习不完啊···本质笨蛋··</p>
       </div>
     </article>
 
     <article class="entry">
-      <div class="entry-date">2026.06.09 13:27</div>
+      <div class="entry-date">2026.06.09 · 13:27</div>
       <div class="entry-body">
         <p>分享一些最近看到的 AI 图，我印象里只在新疆青海一带看到过类似的。</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <img src="截屏2026-06-09 13.13.06.png" alt="" style="max-width:48%;flex:1;min-width:180px;">
-          <img src="6d0949eaa80fa888ae1d2cc50b0aff673546894196280100.jpg" alt="" style="max-width:48%;flex:1;min-width:180px;">
+        <div class="entry-gallery">
+          <img src="截屏2026-06-09 13.13.06.png" alt="">
+          <img src="6d0949eaa80fa888ae1d2cc50b0aff673546894196280100.jpg" alt="">
         </div>
         <p>这张在坎特伯雷拍摄的照片也很符合我的想象，只可惜当时山脉冰川大都融化了。</p>
-        <img src="56fa17073ce024252b593e74698a5a68.jpg" alt="" style="max-width:380px;display:block;">
+        <img src="56fa17073ce024252b593e74698a5a68.jpg" alt="" style="max-width:380px;margin-top:12px;">
       </div>
     </article>
 
     <article class="entry">
-      <div class="entry-date">2026.06.07 16:48</div>
+      <div class="entry-date">2026.06.07 · 16:48</div>
       <div class="entry-body">
-        <p style="margin-bottom:10px;">你们好！</p>
-        <img src="daily-01.jpg" alt="" style="max-width:300px;display:block;">
+        <p style="margin-bottom:12px;">你们好！</p>
+        <img src="daily-01.jpg" alt="" style="max-width:300px;">
       </div>
     </article>
   </section>
 
   <!-- 诗歌 -->
   <section class="section" id="sect-poetry">
-    <div class="section-label">诗 歌</div>
-    <div class="section-intro">正在读诗。<br>点击左侧 + 展开。</div>
+    <div class="section-head">
+      <h1 class="section-label">诗歌</h1>
+      <div class="section-intro">正在读诗。点击展开全文。</div>
+    </div>
 
-    <article class="poetry-block">
-      <h2 class="poetry-title" onclick="togglePoem(this)">
-        <span class="toggle">+</span> 雲雀料理
-      </h2>
-      <div class="poetry-author">萩原朔太郎 · 《月に吠える》1917 · 小椿山 译</div>
-      <div class="poetry-content">
-        <div class="poetry-body">
+    <article class="poem">
+      <div class="poem-head" onclick="togglePoem(this)">
+        <span class="poem-toggle">+</span>
+        <span class="poem-title">雲雀料理</span>
+        <span class="poem-author">萩原朔太郎 · 《月に吠える》1917 · 小椿山 译</span>
+      </div>
+      <div class="poem-body-wrap">
+        <div class="poem-body">
           <p>如献上祭品般献上夜晚的爱筵，</p>
           <p>蜡烛被鱼脂熏染上阴郁，</p>
           <p>我决心推开那扇可爱的绿窗户。</p>
@@ -583,18 +549,19 @@ body{
           <p>将五月遥远之地流动的东西，</p>
           <p>捧上我手中盛着云雀的餐盘，</p>
           <p>而可爱的你决心向左边走去。</p>
+          <div class="poem-source">*agape，初期基督教徒的会餐。选自《吠月：萩原朔太郎诗集》，明室Lucida丨北京联合出版公司，2021</div>
         </div>
-        <div class="poetry-source">*agape，初期基督教徒的会餐。选自《吠月：萩原朔太郎诗集》，明室Lucida丨北京联合出版公司，2021</div>
       </div>
     </article>
 
-    <article class="poetry-block">
-      <h2 class="poetry-title" onclick="togglePoem(this)">
-        <span class="toggle">+</span> 九月
-      </h2>
-      <div class="poetry-author">海子 · 1986</div>
-      <div class="poetry-content">
-        <div class="poetry-body">
+    <article class="poem">
+      <div class="poem-head" onclick="togglePoem(this)">
+        <span class="poem-toggle">+</span>
+        <span class="poem-title">九月</span>
+        <span class="poem-author">海子 · 1986</span>
+      </div>
+      <div class="poem-body-wrap">
+        <div class="poem-body">
           <p>目击众神死亡的草原上野花一片</p>
           <p>远在远方的风比远方更远</p>
           <p>我的琴声呜咽 泪水全无</p>
@@ -605,18 +572,19 @@ body{
           <p>明月如镜高悬草原映照千年岁月</p>
           <p>我的琴声呜咽 泪水全无</p>
           <p>只身打马过草原</p>
+          <div class="poem-source">选自《海子的诗》，人民文学出版社，1999</div>
         </div>
-        <div class="poetry-source">选自《海子的诗》，人民文学出版社，1999</div>
       </div>
     </article>
 
-    <article class="poetry-block">
-      <h2 class="poetry-title" onclick="togglePoem(this)">
-        <span class="toggle">+</span> 镜中
-      </h2>
-      <div class="poetry-author">张枣 · 1984</div>
-      <div class="poetry-content">
-        <div class="poetry-body">
+    <article class="poem">
+      <div class="poem-head" onclick="togglePoem(this)">
+        <span class="poem-toggle">+</span>
+        <span class="poem-title">镜中</span>
+        <span class="poem-author">张枣 · 1984</span>
+      </div>
+      <div class="poem-body-wrap">
+        <div class="poem-body">
           <p>只要想起一生中后悔的事</p>
           <p>梅花便落了下来</p>
           <p>比如看她游泳到河的另一岸</p>
@@ -629,127 +597,130 @@ body{
           <p>让她坐到镜中常坐的地方</p>
           <p>望着窗外，只要想起一生中后悔的事</p>
           <p>梅花便落满了南山</p>
+          <div class="poem-source">选自《张枣的诗》，人民文学出版社，2017</div>
         </div>
-        <div class="poetry-source">选自《张枣的诗》，人民文学出版社，2017</div>
       </div>
     </article>
 
+    <div class="comment-card" id="poetry-comments">
+      <h3>留 言</h3>
+      <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
+      <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300"></textarea>
+      <button class="cp-btn" onclick="addComment()">留 言</button>
+      <div class="cp-msg" id="cf-msg"></div>
+      <div id="comment-list"></div>
+    </div>
   </section>
 
   <!-- 音乐 -->
   <section class="section" id="sect-music">
-    <div class="section-label">音 乐</div>
-    <div class="section-intro">欢迎来听。<br>点击封面播放。</div>
+    <div class="section-head">
+      <h1 class="section-label">音乐</h1>
+      <div class="section-intro">欢迎来听。点击封面播放。</div>
+    </div>
 
     <audio id="player" preload="none"></audio>
 
-    <div>
-      <div class="music-row" data-src="compressed/井上陽水 - Make-up Shadow.mp3" onclick="playSong(this)">
-        <img src="makeup-shadow-cover.jpg" alt="" class="music-cover">
-        <span class="music-play">▶</span>
-        <div>
-          <div class="music-title">Make-up Shadow</div>
-          <div class="music-by">井上陽水</div>
+    <div class="entry" style="padding:14px 18px;">
+      <div class="track" data-src="compressed/井上陽水 - Make-up Shadow.mp3" onclick="playSong(this)">
+        <img src="makeup-shadow-cover.jpg" alt="" class="track-cover">
+        <span class="track-play">▶</span>
+        <div class="track-meta">
+          <div class="track-title">Make-up Shadow</div>
+          <div class="track-by">井上陽水</div>
+          <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
+        <span class="track-index">01</span>
       </div>
-      <div class="music-bar"><div class="music-bar-inner"></div></div>
-    </div>
-
-    <div>
-      <div class="music-row" data-src="compressed/G.E.M.邓紫棋 - 亚莉亚蒂之歌.mp3" onclick="playSong(this)">
-        <img src="arrietty.jpg" alt="" class="music-cover">
-        <span class="music-play">▶</span>
-        <div>
-          <div class="music-title">亚莉亚蒂之歌</div>
-          <div class="music-by">G.E.M. 邓紫棋</div>
+      <div class="track" data-src="compressed/G.E.M.邓紫棋 - 亚莉亚蒂之歌.mp3" onclick="playSong(this)">
+        <img src="arrietty.jpg" alt="" class="track-cover">
+        <span class="track-play">▶</span>
+        <div class="track-meta">
+          <div class="track-title">亚莉亚蒂之歌</div>
+          <div class="track-by">G.E.M. 邓紫棋</div>
+          <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
+        <span class="track-index">02</span>
       </div>
-      <div class="music-bar"><div class="music-bar-inner"></div></div>
-    </div>
-
-    <div>
-      <div class="music-row" data-src="compressed/ELLEGARDEN - Mr. Feather.mp3" onclick="playSong(this)">
-        <img src="mrfeather.jpg" alt="" class="music-cover">
-        <span class="music-play">▶</span>
-        <div>
-          <div class="music-title">Mr. Feather</div>
-          <div class="music-by">ELLEGARDEN</div>
+      <div class="track" data-src="compressed/ELLEGARDEN - Mr. Feather.mp3" onclick="playSong(this)">
+        <img src="mrfeather.jpg" alt="" class="track-cover">
+        <span class="track-play">▶</span>
+        <div class="track-meta">
+          <div class="track-title">Mr. Feather</div>
+          <div class="track-by">ELLEGARDEN</div>
+          <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
+        <span class="track-index">03</span>
       </div>
-      <div class="music-bar"><div class="music-bar-inner"></div></div>
-    </div>
-
-    <div>
-      <div class="music-row" data-src="compressed/手嶌葵 - テルーの唄 (歌集バージョン).mp3" onclick="playSong(this)">
-        <img src="therru.jpg" alt="" class="music-cover">
-        <span class="music-play">▶</span>
-        <div>
-          <div class="music-title">テルーの唄</div>
-          <div class="music-by">手嶌葵</div>
+      <div class="track" data-src="compressed/手嶌葵 - テルーの唄 (歌集バージョン).mp3" onclick="playSong(this)">
+        <img src="therru.jpg" alt="" class="track-cover">
+        <span class="track-play">▶</span>
+        <div class="track-meta">
+          <div class="track-title">テルーの唄</div>
+          <div class="track-by">手嶌葵</div>
+          <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
+        <span class="track-index">04</span>
       </div>
-      <div class="music-bar"><div class="music-bar-inner"></div></div>
-    </div>
-
-    <div>
-      <div class="music-row" data-src="compressed/七ノ歌(なのか).mp3" onclick="playSong(this)">
-        <img src="nanoka.jpg" alt="" class="music-cover">
-        <span class="music-play">▶</span>
-        <div>
-          <div class="music-title">七ノ歌</div>
-          <div class="music-by">RADWIMPS</div>
+      <div class="track" data-src="compressed/七ノ歌(なのか).mp3" onclick="playSong(this)">
+        <img src="nanoka.jpg" alt="" class="track-cover">
+        <span class="track-play">▶</span>
+        <div class="track-meta">
+          <div class="track-title">七ノ歌</div>
+          <div class="track-by">RADWIMPS</div>
+          <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
+        <span class="track-index">05</span>
       </div>
-      <div class="music-bar"><div class="music-bar-inner"></div></div>
-    </div>
-
-    <div>
-      <div class="music-row" data-src="compressed/ヨルシカ - 櫂.mp3" onclick="playSong(this)">
-        <img src="kai.jpg" alt="" class="music-cover">
-        <span class="music-play">▶</span>
-        <div>
-          <div class="music-title">櫂</div>
-          <div class="music-by">ヨルシカ</div>
+      <div class="track" data-src="compressed/ヨルシカ - 櫂.mp3" onclick="playSong(this)">
+        <img src="kai.jpg" alt="" class="track-cover">
+        <span class="track-play">▶</span>
+        <div class="track-meta">
+          <div class="track-title">櫂</div>
+          <div class="track-by">ヨルシカ</div>
+          <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
+        <span class="track-index">06</span>
       </div>
-      <div class="music-bar"><div class="music-bar-inner"></div></div>
     </div>
   </section>
 
   <!-- 学术 -->
   <section class="section" id="sect-academic">
-    <div class="section-label">学 术</div>
-    <div class="section-intro">加油。</div>
+    <div class="section-head">
+      <h1 class="section-label">学术</h1>
+      <div class="section-intro">加油。</div>
+    </div>
 
     <a class="note-featured" href="notes/Lecture_11_Notes_v2.pdf" target="_blank">
-      <div class="note-num">Lecture 11</div>
+      <div class="note-num">LECTURE 11 · PINNED</div>
       <div class="note-title">边界层基础</div>
       <div class="note-sub">Blasius 精确解 · 动量积分方程 · 近似剖面</div>
     </a>
 
     <div class="notes-grid">
       <a class="note-card" href="notes/Lecture_7_Notes.pdf" target="_blank">
-        <div class="note-num">Lecture 7</div>
+        <div class="note-num">LECTURE 07</div>
         <div class="note-title">流体运动的微分分析导论</div>
         <div class="note-sub">连续性方程 · 流函数 · N-S 方程推导</div>
       </a>
       <a class="note-card" href="notes/Lecture_8_Notes.pdf" target="_blank">
-        <div class="note-num">Lecture 8</div>
+        <div class="note-num">LECTURE 08</div>
         <div class="note-title">不可压缩无粘流动</div>
         <div class="note-sub">Bernoulli 方程 · Euler 方程 · 总压与静压</div>
       </a>
       <a class="note-card" href="notes/Lecture_9_Notes.pdf" target="_blank">
-        <div class="note-num">Lecture 9</div>
+        <div class="note-num">LECTURE 09</div>
         <div class="note-title">量纲分析与相似性</div>
         <div class="note-sub">Buckingham Π 定理 · 雷诺数 · 模型试验</div>
       </a>
       <a class="note-card" href="notes/Lecture_10_Notes.pdf" target="_blank">
-        <div class="note-num">Lecture 10</div>
+        <div class="note-num">LECTURE 10</div>
         <div class="note-title">充分发展层流与流量测量</div>
         <div class="note-sub">Hagen-Poiseuille 定律 · Couette 流 · 流量计</div>
       </a>
       <a class="note-card" href="notes/Lecture_12_Notes.pdf" target="_blank">
-        <div class="note-num">Lecture 12</div>
+        <div class="note-num">LECTURE 12</div>
         <div class="note-title">地球物理流体力学导论</div>
         <div class="note-sub">科里奥利力 · 旋转参考系 · 角动量守恒</div>
       </a>
@@ -758,35 +729,87 @@ body{
 
 </div>
 
+<!-- ===== footer ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>© 2026 Simon</span>
+    <div class="footer-links">
+      <a href="https://github.com/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <a href="/feed.xml" onclick="return false;">
+        <svg viewBox="0 0 16 16"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4A6 6 0 0 1 13.5 12.5a1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+        RSS
+      </a>
+      <button class="sub-btn" onclick="openSub()">订阅</button>
+    </div>
+  </div>
+</footer>
+
+<!-- subscribe overlay -->
+<div class="sub-overlay" id="sub-overlay" onclick="if(event.target===this)closeSub()">
+  <div class="sub-box">
+    <h3>邮件订阅</h3>
+    <p>更新后我会发邮件告诉你。</p>
+    <input type="email" id="sub-email" placeholder="你的邮箱" maxlength="60">
+    <button class="sub-go" onclick="doSubscribe()">确 认</button>
+    <div class="sub-msg" id="sub-msg"></div>
+    <button class="sub-close" onclick="closeSub()">以后再说</button>
+  </div>
+</div>
+
 <script>
+var _pendingSwitch=null;
 function switchSection(name){
-  document.querySelectorAll('.nav a').forEach(function(a){a.classList.remove('active');});
-  var links = document.querySelectorAll('.nav a');
-  var sections = ['daily','poetry','music','academic'];
-  var idx = sections.indexOf(name);
-  if(idx >= 0 && links[idx]) links[idx].classList.add('active');
-
-  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nav a').forEach(function(a){
+    a.classList.toggle('active', a.dataset.nav === name);
+  });
   var target = document.getElementById('sect-' + name);
-  if(target) target.classList.add('active');
+  if(!target) return;
+  var current = document.querySelector('.section.active');
+  if(current === target) return;
 
-  // Show comment panel only on poetry
+  clearTimeout(_pendingSwitch);
+  document.querySelectorAll('.section.leaving').forEach(function(s){s.classList.remove('leaving');});
 
-  if(window.innerWidth <= 768){
-    document.querySelector('.main').scrollIntoView({behavior:'smooth'});
+  var activate = function(){
+    document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active','leaving');});
+    target.classList.add('active');
+    var cc = document.getElementById('poetry-comments');
+    if(cc) cc.style.display = (name === 'poetry') ? 'block' : 'none';
+  };
+
+  if(current){
+    current.classList.add('leaving');
+    _pendingSwitch = setTimeout(activate, 200);
+  } else {
+    activate();
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function togglePoem(head){
+  var poem = head.parentElement;
+  var wrap = poem.querySelector('.poem-body-wrap');
+  if(poem.classList.contains('open')){
+    wrap.style.maxHeight = '0';
+    poem.classList.remove('open');
+  } else {
+    poem.classList.add('open');
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
   }
 }
 
 function playSong(el){
   var player = document.getElementById('player');
   var src = el.getAttribute('data-src');
-  var bar = el.parentElement.querySelector('.music-bar');
-  var barInner = bar.querySelector('.music-bar-inner');
+  var bar = el.querySelector('.track-bar');
+  var barInner = bar.querySelector('.track-bar-inner');
   var wasPlaying = !player.paused && player.src.indexOf(encodeURI(src)) > -1;
 
-  // Hide all bars
-  document.querySelectorAll('.music-bar').forEach(function(b){b.classList.remove('show');});
-  document.querySelectorAll('.music-row').forEach(function(r){r.classList.remove('playing');});
+  document.querySelectorAll('.track-bar').forEach(function(b){b.classList.remove('show');});
+  document.querySelectorAll('.track').forEach(function(r){r.classList.remove('playing');});
 
   if(wasPlaying){
     player.pause();
@@ -795,22 +818,22 @@ function playSong(el){
     player.play().catch(function(){});
     el.classList.add('playing');
     bar.classList.add('show');
-    // Update progress
     clearInterval(player._interval);
     player._interval = setInterval(function(){
       if(player.duration){
         barInner.style.width = (player.currentTime / player.duration * 100) + '%';
       }
     }, 200);
-    // Click bar to seek
     bar.onclick = function(e){
+      e.stopPropagation();
       if(!player.duration) return;
       var pct = (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth;
       player.currentTime = pct * player.duration;
     };
   }
-  player.onended = function(){el.classList.remove('playing');bar.classList.remove('show');clearInterval(player._interval);};
-  player.onerror = function(){el.classList.remove('playing');bar.classList.remove('show');};
+  player.onended = player.onerror = function(){
+    el.classList.remove('playing'); bar.classList.remove('show');
+  };
 }
 
 // Subscribe
@@ -831,27 +854,11 @@ function doSubscribe(){
   }).catch(function(){msg.textContent='网络错误，再试一次。';});
 }
 
-function togglePoem(el){
-  var toggle = el.querySelector('.toggle');
-  var content = el.parentElement.querySelector('.poetry-content');
-  if(content.classList.contains('open')){
-    content.style.maxHeight = '0';
-    toggle.classList.remove('open');
-    content.classList.remove('open');
-  } else {
-    content.classList.add('open');
-    content.style.maxHeight = content.scrollHeight + 'px';
-    toggle.classList.add('open');
-  }
-}
-
-// Comment system (Supabase)
+// Comments (Supabase)
 var SB_URL = 'https://cmrcjbhanwzqriwkvpof.supabase.co';
 var SB_KEY = 'sb_publishable_jXRJy1km3NkcmEX8ocQXXg_i9Jb1fp2';
 var SB_TABLE = 'Comments';
-
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-
 function loadComments(){
   var l=document.getElementById('comment-list');
   if(!l) return;
@@ -859,21 +866,19 @@ function loadComments(){
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   }).then(function(r){return r.json();})
     .then(function(data){
-      if(data.error){l.innerHTML='<div class=\"cp-empty\">'+data.message+'</div>';return;}
-      if(!data.length){l.innerHTML='<div class=\"cp-empty\">还没有留言。</div>';return;}
+      if(data.error){l.innerHTML='<div class="cp-empty">'+data.message+'</div>';return;}
+      if(!data.length){l.innerHTML='<div class="cp-empty">还没有留言。</div>';return;}
       var h='';
       for(var i=0;i<data.length;i++){
         var c=data[i];
-        h+='<div class=\"cp-item\"><div class=\"cp-name\">'+esc(c.nickname)+'</div>';
-        h+='<div class=\"cp-content\">'+esc(c.content)+'</div>';
-        h+='<div class=\"cp-date\">'+(c.created_at||'').slice(0,10)+'</div>';
-        h+='</div>';
+        h+='<div class="cp-item"><div class="cp-name">'+esc(c.nickname)+'</div>';
+        h+='<div class="cp-content">'+esc(c.content)+'</div>';
+        h+='<div class="cp-date">'+(c.created_at||'').slice(0,10)+'</div></div>';
       }
       l.innerHTML=h;
     })
-    .catch(function(e){l.innerHTML='<div class=\"cp-empty\">加载失败：'+e.message+'</div>';});
+    .catch(function(e){l.innerHTML='<div class="cp-empty">加载失败：'+e.message+'</div>';});
 }
-
 function addComment(){
   var n=document.getElementById('cf-nickname').value.trim();
   var t=document.getElementById('cf-content').value.trim();
@@ -889,49 +894,21 @@ function addComment(){
     m.textContent='已留言。';
     document.getElementById('cf-nickname').value='';
     document.getElementById('cf-content').value='';
-    setTimeout(function(){loadComments();},200);
+    setTimeout(loadComments,200);
     setTimeout(function(){m.textContent='';},2000);
   }).catch(function(err){m.textContent='发送失败：'+err.message;});
 }
 
-setTimeout(function(){loadComments();},500);
+// Deep link: #poetry / #music / #academic
+var initial = (window.location.hash || '').replace('#','');
+if(['daily','poetry','music','academic'].indexOf(initial) > -1) switchSection(initial);
 
-</script>
-
-
-
-<!-- Comment Panel -->
-<aside class="comment-panel" id="comment-panel" style="display:none;">
-  <h3>欢 迎 分 享</h3>
-  <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
-  <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300"></textarea>
-  <button class="cp-btn" onclick="addComment()">留 言</button>
-  <div class="cp-msg" id="cf-msg"></div>
-  <div class="cp-list" id="comment-list"></div>
-</aside>
-
-<script>
-(function(){
-  var p = document.getElementById('comment-panel');
-  if(!p) return;
-  var orig = switchSection;
-  switchSection = function(name){
-    orig(name);
-    if(name === 'poetry'){
-      p.style.display = 'block';
-      loadComments();
-    } else {
-      p.style.display = 'none';
-    }
-  };
-
-  // Track visit
-  fetch(SB_URL+'/rest/v1/Visits',{
-    method:'POST',
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-    body:JSON.stringify({page:window.location.pathname||'home',ua:navigator.userAgent})
-  }).catch(function(){});
-})();
+// Track visit
+fetch(SB_URL+'/rest/v1/Visits',{
+  method:'POST',
+  headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+  body:JSON.stringify({page:window.location.pathname||'home',ua:navigator.userAgent})
+}).catch(function(){});
 </script>
 </body>
 </html>
