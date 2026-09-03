@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simon</title>
 <link rel="icon" href="data:,">
-<link rel="preload" as="image" href="bg-small.jpg">
+<link rel="preload" as="image" href="bg.jpg">
 <style>
 /* ===== tokens ===== */
 :root{
@@ -25,9 +25,9 @@
   --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:15.5px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+html{font-size:17.5px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
 body{
-  background:var(--bg) url("bg-small.jpg") center/cover no-repeat fixed;
+  background:var(--bg) url("bg.jpg") center/cover no-repeat fixed;
   color:var(--text);
   font-family:var(--sans);
   line-height:1.75;
@@ -35,7 +35,7 @@ body{
 /* 两侧背景的极浅遮罩 */
 .bg-veil{
   position:fixed;inset:0;z-index:-1;
-  background:rgba(31,33,36,0.35);
+  background:rgba(31,33,36,0.12);
   pointer-events:none;
 }
 ::selection{background:rgba(217,123,82,0.3);}
