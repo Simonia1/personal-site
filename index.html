@@ -5,40 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simon</title>
 <link rel="icon" href="data:,">
+<link rel="preload" as="image" href="bg-small.jpg">
 <style>
 /* ===== tokens ===== */
 :root{
-  --bg:#f4f2ec;
-  --sheet:#ffffff;
-  --card:#ffffff;
-  --hairline:#ececea;
-  --hairline-dark:#d9d7d3;
-  --text:#33312c;
-  --text-strong:#1e1d1a;
-  --muted:#77736a;
-  --faint:#a39e93;
-  --accent:#ad512d;
-  --accent-soft:rgba(173,81,45,0.08);
+  --bg:#1f2124;
+  --sheet:#25272b;
+  --card:#2b2e33;
+  --hover:#32363c;
+  --hairline:#3a3e44;
+  --hairline-dark:#4a4f56;
+  --text:#c5c8c6;
+  --text-strong:#e8eaea;
+  --muted:#9ba0a3;
+  --faint:#6f757b;
+  --accent:#d97b52;
+  --accent-soft:rgba(217,123,82,0.12);
   --mono:var(--sans);
   --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:16px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+html{font-size:15.5px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
 body{
-  background:var(--bg) url("bg.jpg") center/cover no-repeat fixed;
+  background:var(--bg) url("bg-small.jpg") center/cover no-repeat fixed;
   color:var(--text);
   font-family:var(--sans);
-  line-height:1.9;
+  line-height:1.75;
 }
 /* 两侧背景的极浅遮罩 */
 .bg-veil{
   position:fixed;inset:0;z-index:-1;
-  background:rgba(250,249,245,0.22);
+  background:rgba(31,33,36,0.35);
   pointer-events:none;
 }
-::selection{background:rgba(173,81,45,0.15);}
+::selection{background:rgba(217,123,82,0.3);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;}
+.sheet{animation:fadeIn .6s ease both;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
 /* ===== 中央实心面板：所有文字都在里面，两侧露背景 ===== */
 .sheet{
@@ -54,7 +58,7 @@ img{max-width:100%;}
 /* ===== 顶部通栏导航（覆盖整个页面宽度） ===== */
 .site-header{
   position:sticky;top:0;z-index:50;
-  background:rgba(255,255,255,0.9);
+  background:rgba(37,39,43,0.88);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
   border-bottom:1px solid var(--hairline);
@@ -77,7 +81,7 @@ img{max-width:100%;}
 }
 .nav{display:flex;gap:22px;}
 .nav a{
-  font-size:0.82rem;
+  font-size:0.92rem;
   color:var(--muted);
   cursor:pointer;
   padding-bottom:2px;
@@ -112,7 +116,7 @@ img{max-width:100%;}
   display:flex;align-items:baseline;justify-content:space-between;gap:16px;
 }
 .section-label{
-  font-size:1.2rem;font-weight:600;
+  font-size:1.35rem;font-weight:600;
   letter-spacing:0.04em;
   color:var(--text-strong);
 }
@@ -125,11 +129,11 @@ img{max-width:100%;}
 }
 .section-cap{
   font-family:var(--mono);
-  font-size:0.62rem;letter-spacing:0.18em;
+  font-size:0.72rem;letter-spacing:0.18em;
   color:var(--faint);text-transform:uppercase;
 }
 .section-intro{
-  font-size:0.82rem;color:var(--muted);
+  font-size:0.95rem;color:var(--muted);
   margin-top:10px;
 }
 
@@ -140,17 +144,25 @@ img{max-width:100%;}
   border-radius:10px;
   padding:28px 32px;
   margin-bottom:22px;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.entry:hover{
+  transform:translateY(-3px);
+  border-color:var(--hairline-dark);
+  box-shadow:0 12px 28px rgba(0,0,0,0.25);
 }
 .entry-date{
   font-family:var(--mono);
-  font-size:0.68rem;letter-spacing:0.06em;
+  font-size:0.78rem;letter-spacing:0.06em;
   color:var(--accent);
   margin-bottom:14px;
 }
-.entry-body{font-size:0.92rem;color:var(--text);}
+.entry-body{font-size:1rem;color:var(--text);}
 .entry-body p{margin-bottom:10px;}
 .entry-body p:last-child{margin-bottom:0;}
 .entry-body img{border-radius:6px;display:block;}
+.entry-body img{transition:transform .3s ease,box-shadow .3s ease;}
+.entry-body img:hover{transform:scale(1.015);box-shadow:0 10px 26px rgba(0,0,0,0.28);}
 .entry-divider{height:1px;background:var(--hairline);margin:18px 0;}
 .entry-gallery{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 12px;}
 .entry-gallery img{flex:1;min-width:180px;max-width:48%;height:auto;object-fit:cover;}
@@ -162,6 +174,12 @@ img{max-width:100%;}
   border-radius:10px;
   margin-bottom:14px;
   overflow:hidden;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.poem:hover{
+  transform:translateY(-2px);
+  border-color:var(--hairline-dark);
+  box-shadow:0 10px 24px rgba(0,0,0,0.2);
 }
 .poem-head{
   padding:20px 26px;
@@ -177,12 +195,12 @@ img{max-width:100%;}
 }
 .poem.open .poem-toggle{transform:rotate(45deg);}
 .poem-title{
-  font-size:0.98rem;font-weight:600;
+  font-size:1.1rem;font-weight:600;
   color:var(--text-strong);
 }
 .poem-author{
   margin-left:auto;
-  font-size:0.72rem;font-weight:400;
+  font-size:0.8rem;font-weight:400;
   color:var(--faint);
   white-space:nowrap;
 }
@@ -205,8 +223,8 @@ img{max-width:100%;}
   border:1px solid transparent;
   transition:background .2s,border-color .2s;
 }
-.track:hover{background:#f5f3ee;border-color:var(--hairline);}
-.track.playing{background:#f5f3ee;border-color:var(--hairline);}
+.track:hover{background:var(--hover);border-color:var(--hairline);}
+.track.playing{background:var(--hover);border-color:var(--hairline);}
 .track{position:relative;}
 .track-cover{
   width:60px;height:60px;flex-shrink:0;
@@ -221,7 +239,7 @@ img{max-width:100%;}
   opacity:0;transition:opacity .2s;
 }
 .track:hover .track-play{opacity:1;}
-.track.playing .track-play{opacity:1;background:rgba(173,81,45,0.6);}
+.track.playing .track-play{opacity:1;background:rgba(217,123,82,0.65);}
 .track.playing .track-play::after{content:'❚❚';font-size:0.66rem;letter-spacing:2px;}
 .track-meta{flex:1;min-width:0;}
 .track-title{font-size:0.94rem;font-weight:600;color:var(--text-strong);}
@@ -250,9 +268,9 @@ img{max-width:100%;}
   border-radius:10px;
   padding:26px 30px;
   margin-bottom:20px;
-  transition:border-color .2s;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
 }
-.note-featured:hover{border-color:var(--hairline-dark);border-left-color:var(--accent);}
+.note-featured:hover{border-color:var(--hairline-dark);border-left-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,0.25);}
 .note-num{
   font-family:var(--mono);
   font-size:0.62rem;letter-spacing:0.14em;
@@ -275,9 +293,9 @@ img{max-width:100%;}
   border:1px solid var(--hairline);
   border-radius:10px;
   padding:22px 24px 20px;
-  transition:border-color .2s;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
 }
-.note-card:hover{border-color:var(--hairline-dark);}
+.note-card:hover{border-color:var(--hairline-dark);transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,0.25);}
 .note-card .note-title{font-size:0.92rem;}
 
 /* ===== poetry 留言 ===== */
@@ -297,7 +315,7 @@ img{max-width:100%;}
 .comment-card input,.comment-card textarea{
   display:block;width:100%;
   padding:9px 14px;margin-bottom:10px;
-  background:#faf9f6;
+  background:var(--bg);
   border:1px solid var(--hairline-dark);
   border-radius:6px;
   font-family:var(--sans);
@@ -309,8 +327,8 @@ img{max-width:100%;}
 .comment-card input::placeholder,.comment-card textarea::placeholder{color:var(--faint);}
 .comment-card input:focus,.comment-card textarea:focus{
   border-color:var(--accent);
-  background:#fff;
-  box-shadow:0 0 0 3px rgba(173,81,45,0.1);
+  background:var(--card);
+  box-shadow:0 0 0 3px var(--accent-soft);
 }
 .comment-card textarea{height:64px;}
 .cp-btn{
@@ -322,7 +340,7 @@ img{max-width:100%;}
   font-family:var(--sans);font-size:0.78rem;letter-spacing:0.1em;
   cursor:pointer;transition:all .2s;
 }
-.cp-btn:hover{background:#9a4526;}
+.cp-btn:hover{background:#b95f3a;}
 .cp-msg{font-size:0.72rem;color:var(--muted);margin:10px 0;}
 .cp-item{padding:12px 0;border-bottom:1px solid var(--hairline);}
 .cp-item:last-child{border-bottom:none;}
@@ -355,7 +373,7 @@ img{max-width:100%;}
   color:#fff;
   cursor:pointer;transition:background .2s;
 }
-.sub-btn:hover{background:#9a4526;}
+.sub-btn:hover{background:#b95f3a;}
 .sub-overlay{
   display:none;position:fixed;inset:0;
   background:rgba(30,28,24,0.4);
@@ -376,21 +394,21 @@ img{max-width:100%;}
 .sub-box input{
   display:block;width:100%;
   padding:10px 14px;margin-bottom:10px;
-  background:#fff;
+  background:var(--bg);
   border:1px solid var(--hairline-dark);border-radius:6px;
   font-family:var(--sans);font-size:0.8rem;color:var(--text);
   outline:none;text-align:center;
   transition:border-color .2s,box-shadow .2s;
 }
 .sub-box input::placeholder{color:var(--faint);}
-.sub-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(173,81,45,0.1);}
+.sub-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .sub-box .sub-go{
   padding:7px 26px;margin-top:6px;
   background:var(--accent);border:1px solid var(--accent);border-radius:6px;
   color:#fff;font-family:var(--sans);font-size:0.78rem;letter-spacing:0.08em;
   cursor:pointer;transition:background .2s;
 }
-.sub-box .sub-go:hover{background:#9a4526;}
+.sub-box .sub-go:hover{background:#b95f3a;}
 .sub-msg{font-size:0.72rem;color:var(--muted);margin-top:10px;min-height:1em;}
 .sub-close{
   margin-top:14px;font-size:0.72rem;color:var(--faint);
@@ -400,6 +418,7 @@ img{max-width:100%;}
 
 /* ===== mobile ===== */
 @media(max-width:720px){
+  body{background-attachment:scroll;}
   .header-inner{padding:14px 20px;flex-wrap:wrap;}
   .wrap{padding:36px 20px 48px;}
   .site-title em{display:none;}
@@ -445,10 +464,10 @@ img{max-width:100%;}
     <article class="entry">
       <div class="entry-date">2026.07.21 · 23:52</div>
       <div class="entry-body">
-        <img src="1e7cf129c33ed133ced0b012fec28b31.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
+        <img loading="lazy" src="1e7cf129c33ed133ced0b012fec28b31.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
         <p>变成2和4之后还会更小吗</p>
         <div class="entry-divider"></div>
-        <img src="34e552c8500b2c8897b58aa3a701f637.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
+        <img loading="lazy" src="34e552c8500b2c8897b58aa3a701f637.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
         <p>四人小队3小时艰难通过教学关</p>
       </div>
     </article>
@@ -465,11 +484,11 @@ img{max-width:100%;}
       <div class="entry-body">
         <p>分享一些最近看到的 AI 图，我印象里只在新疆青海一带看到过类似的。</p>
         <div class="entry-gallery">
-          <img src="截屏2026-06-09 13.13.06.png" alt="">
-          <img src="6d0949eaa80fa888ae1d2cc50b0aff673546894196280100.jpg" alt="">
+          <img loading="lazy" src="截屏2026-06-09 13.13.06.png" alt="">
+          <img loading="lazy" src="6d0949eaa80fa888ae1d2cc50b0aff673546894196280100.jpg" alt="">
         </div>
         <p>这张在坎特伯雷拍摄的照片也很符合我的想象，只可惜当时山脉冰川大都融化了。</p>
-        <img src="56fa17073ce024252b593e74698a5a68.jpg" alt="" style="max-width:380px;margin-top:12px;">
+        <img loading="lazy" src="56fa17073ce024252b593e74698a5a68.jpg" alt="" style="max-width:380px;margin-top:12px;">
       </div>
     </article>
 
@@ -477,7 +496,7 @@ img{max-width:100%;}
       <div class="entry-date">2026.06.07 · 16:48</div>
       <div class="entry-body">
         <p style="margin-bottom:12px;">你们好！</p>
-        <img src="daily-01.jpg" alt="" style="max-width:300px;">
+        <img loading="lazy" src="daily-01.jpg" alt="" style="max-width:300px;">
       </div>
     </article>
   </section>
@@ -580,7 +599,7 @@ img{max-width:100%;}
 
     <div class="entry" style="padding:14px 18px;">
       <div class="track" data-src="compressed/井上陽水 - Make-up Shadow.mp3" onclick="playSong(this)">
-        <img src="makeup-shadow-cover.jpg" alt="" class="track-cover">
+        <img loading="lazy" src="makeup-shadow-cover.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">Make-up Shadow</div>
@@ -590,7 +609,7 @@ img{max-width:100%;}
         <span class="track-index">01</span>
       </div>
       <div class="track" data-src="compressed/G.E.M.邓紫棋 - 亚莉亚蒂之歌.mp3" onclick="playSong(this)">
-        <img src="arrietty.jpg" alt="" class="track-cover">
+        <img loading="lazy" src="arrietty.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">亚莉亚蒂之歌</div>
@@ -600,7 +619,7 @@ img{max-width:100%;}
         <span class="track-index">02</span>
       </div>
       <div class="track" data-src="compressed/ELLEGARDEN - Mr. Feather.mp3" onclick="playSong(this)">
-        <img src="mrfeather.jpg" alt="" class="track-cover">
+        <img loading="lazy" src="mrfeather.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">Mr. Feather</div>
@@ -610,7 +629,7 @@ img{max-width:100%;}
         <span class="track-index">03</span>
       </div>
       <div class="track" data-src="compressed/手嶌葵 - テルーの唄 (歌集バージョン).mp3" onclick="playSong(this)">
-        <img src="therru.jpg" alt="" class="track-cover">
+        <img loading="lazy" src="therru.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">テルーの唄</div>
@@ -620,7 +639,7 @@ img{max-width:100%;}
         <span class="track-index">04</span>
       </div>
       <div class="track" data-src="compressed/七ノ歌(なのか).mp3" onclick="playSong(this)">
-        <img src="nanoka.jpg" alt="" class="track-cover">
+        <img loading="lazy" src="nanoka.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">七ノ歌</div>
@@ -630,7 +649,7 @@ img{max-width:100%;}
         <span class="track-index">05</span>
       </div>
       <div class="track" data-src="compressed/ヨルシカ - 櫂.mp3" onclick="playSong(this)">
-        <img src="kai.jpg" alt="" class="track-cover">
+        <img loading="lazy" src="kai.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">櫂</div>
