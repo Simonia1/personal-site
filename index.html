@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simon</title>
+<title>Haoze Li</title>
 <link rel="icon" href="data:,">
-<link rel="preload" as="image" href="bg.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ===== tokens ===== */
 :root{
-  --ink:#141518;          /* 最深底色 */
-  --bg:#191b1e;           /* 页面底 */
-  --sheet:#1e2024;        /* 中央面板 */
-  --raise:#222529;        /* 轻抬升面 */
-  --hair:#2c2f34;         /* 发丝线 */
-  --hair-dark:#3d4148;
-  --text:#b6bac0;
-  --strong:#e9e7e1;       /* 暖白 */
-  --muted:#8b9097;
-  --faint:#62676e;
-  --accent:#8fa8bc;         /* 灰蓝，克制使用 */
-  --accent-dim:rgba(143,168,188,0.15);
-  --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-  --weave:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000' fill-opacity='0'/%3E%3Cpath d='M0 3h6M3 0v6' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M0 1.5h6M1.5 0v6' stroke='%23000000' stroke-opacity='0.08' stroke-width='1'/%3E%3C/svg%3E");
+  --paper:#fbfaf7;        /* 白色面板 */
+  --bg:#eceae4;           /* 图加载前的底色 */
+  --raise:#f2f0ea;
+  --hair:#e5e2da;
+  --hair-dark:#c9c5bb;
+  --text:#3a3833;
+  --strong:#171613;
+  --muted:#6d6a62;
+  --faint:#a09c92;
+  --accent:#8a6f3d;       /* 深香槟，白底上够对比 */
+  --accent-dim:rgba(138,111,61,0.12);
+  --head:"Inter Tight","Inter",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   --mono:"SF Mono","Menlo",monospace;
-  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif;
 }
-*,*::before,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:17px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
 body{
   background:var(--bg);
@@ -36,48 +36,66 @@ body{
   overflow-y:scroll;
 }
 
-/* ===== 背景：fixed 定位层代替 background-attachment:fixed，滚动零重绘 ===== */
-.bg-veil{
-  position:fixed;inset:-40px;z-index:-1;
-  pointer-events:none;
+/* ===== 背景：bg.jpg 两侧透出 ===== */
+.bg{
+  position:fixed;inset:0;z-index:-1;
   background:url("bg.jpg") center/cover no-repeat;
-  transition:transform .6s cubic-bezier(.22,.61,.36,1);
-  will-change:transform;
 }
-/* 极浅遮罩，保证文字可读但不糊图 */
-.bg-veil::before{
+.bg::before{
   content:'';position:absolute;inset:0;
-  background:rgba(20,21,24,0.18);
+  background:rgba(250,249,246,0.12);
 }
-/* 纸纹颗粒 */
-.bg-veil::after{
+.bg::after{ /* 颗粒 */
   content:'';position:absolute;inset:0;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:0.045;
+  opacity:0.05;
 }
 ::selection{background:var(--accent-dim);color:var(--strong);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;}
 
-.sheet{animation:fadeIn .5s ease both;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+/* ===== 扉页：流场粒子 + 点击进入 ===== */
+#gate{
+  position:fixed;inset:0;z-index:200;
+  background:#fbfaf7;
+  cursor:pointer;
+  transition:opacity 1s ease;
+  overflow:hidden;
+}
+#gate.gone{opacity:0;pointer-events:none;}
+#gate canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.gate-title{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;
+}
+.gate-title h1{
+  font-family:var(--head);
+  font-weight:600;
+  font-size:clamp(3rem,9vw,6.5rem);
+  letter-spacing:-0.02em;
+  color:var(--strong);
+  line-height:1.1;
+}
+.gate-title p{
+  font-family:var(--mono);
+  font-size:0.78rem;letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin-top:1.4rem;
+  animation:breath 3s ease-in-out infinite;
+}
+@keyframes breath{0%,100%{opacity:.3}50%{opacity:.9}}
 
-/* ===== 中央面板：两侧细发丝线代替投影 ===== */
+/* ===== 中央面板 ===== */
 .sheet{
   max-width:840px;
   margin:0 auto;
   min-height:100vh;
-  background-image:
-    var(--noise),
-    radial-gradient(120% 60% at 50% 0%,rgba(255,255,255,0.035),rgba(255,255,255,0) 55%),
-    linear-gradient(180deg,#22252a,var(--sheet) 140px);
-  background-blend-mode:overlay,normal,normal;
-  border-left:1px solid rgba(255,255,255,0.05);
+  background:var(--paper);
+  border-left:1px solid var(--hair);
   border-right:1px solid var(--hair);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.25),
-    0 24px 90px rgba(0,0,0,0.55),
-    0 4px 18px rgba(0,0,0,0.4);
+  box-shadow:0 24px 90px rgba(40,36,26,0.18);
   display:flex;
   flex-direction:column;
 }
@@ -85,9 +103,9 @@ img{max-width:100%;}
 /* ===== 顶部通栏导航 ===== */
 .site-header{
   position:sticky;top:0;z-index:50;
-  background:linear-gradient(180deg,rgba(38,41,46,0.96),rgba(30,32,36,0.93));
+  background:rgba(251,250,247,0.94);
   border-bottom:1px solid var(--hair);
-  box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  box-shadow:0 8px 24px rgba(40,36,26,0.06);
 }
 .header-inner{
   max-width:1080px;margin:0 auto;
@@ -95,21 +113,21 @@ img{max-width:100%;}
   display:flex;align-items:center;justify-content:space-between;gap:16px;
 }
 .site-title{
-  display:flex;align-items:center;gap:14px;
-  
+  font-family:var(--head);
   font-size:1.05rem;font-weight:600;
-  letter-spacing:0.06em;
+  letter-spacing:-0.01em;
   color:var(--strong);
 }
-/* 印章 */.site-title em{
+.site-title em{
   font-family:var(--mono);
   font-style:normal;font-weight:400;
   font-size:0.64rem;color:var(--faint);
   letter-spacing:0.04em;
+  margin-left:12px;
 }
 .nav{display:flex;gap:26px;}
 .nav a{
-  font-size:0.9rem;letter-spacing:0.08em;
+  font-size:0.9rem;letter-spacing:0.02em;
   color:var(--muted);
   cursor:pointer;
   transition:color .25s;
@@ -131,14 +149,12 @@ img{max-width:100%;}
 @keyframes rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 @keyframes sink{from{opacity:1;}to{opacity:0;}}
 
-/* ===== 小标题：衬线 + 短红线 ===== */
-.section-head{
-  margin-bottom:44px;
-}
+/* ===== 小标题 ===== */
+.section-head{margin-bottom:44px;}
 .section-label{
-  
+  font-family:var(--head);
   font-size:1.7rem;font-weight:600;
-  letter-spacing:0.14em;
+  letter-spacing:-0.015em;
   color:var(--strong);
   line-height:1.4;
 }
@@ -155,15 +171,12 @@ img{max-width:100%;}
   color:var(--faint);text-transform:uppercase;
   margin-top:10px;
 }
-.section-intro{
-  font-size:0.9rem;color:var(--muted);
-}
+.section-intro{font-size:0.9rem;color:var(--muted);}
 
-/* ===== entries：去卡片化，发丝线分隔 ===== */
+/* ===== entries：发丝线分隔 ===== */
 .entry{
   padding:30px 0 34px;
   border-top:1px solid var(--hair);
-  margin-bottom:0;
 }
 .entry:first-of-type{border-top:none;padding-top:0;}
 .entry-date{
@@ -175,16 +188,13 @@ img{max-width:100%;}
 .entry-body{font-size:0.98rem;color:var(--text);}
 .entry-body p{margin-bottom:10px;}
 .entry-body p:last-child{margin-bottom:0;}
-.entry-body img{display:block;border-radius:2px;box-shadow:0 12px 32px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.045);}
+.entry-body img{display:block;border-radius:2px;box-shadow:0 12px 32px rgba(40,36,26,0.18),0 0 0 1px rgba(23,22,19,0.06);}
 .entry-divider{height:1px;background:var(--hair);margin:22px 0;}
 .entry-gallery{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 12px;}
 .entry-gallery img{flex:1;min-width:180px;max-width:48%;height:auto;object-fit:cover;}
 
 /* ===== poetry ===== */
-.poem{
-  border-top:1px solid var(--hair);
-  margin-bottom:0;
-}
+.poem{border-top:1px solid var(--hair);}
 .poem:last-of-type{border-bottom:1px solid var(--hair);}
 .poem-head{
   padding:24px 4px;
@@ -192,7 +202,7 @@ img{max-width:100%;}
   display:flex;align-items:baseline;gap:16px;
   transition:background .2s;
 }
-.poem-head:hover{background:rgba(255,255,255,0.02);}
+.poem-head:hover{background:rgba(23,22,19,0.025);}
 .poem-toggle{
   font-family:var(--mono);
   font-weight:300;
@@ -202,31 +212,25 @@ img{max-width:100%;}
 }
 .poem.open .poem-toggle{transform:rotate(45deg);}
 .poem-title{
-  
+  font-family:var(--head);
   font-size:1.18rem;font-weight:600;
-  letter-spacing:0.08em;
+  letter-spacing:-0.01em;
   color:var(--strong);
 }
 .poem-author{
   margin-left:auto;
-  font-size:0.74rem;font-weight:400;
-  color:var(--faint);
-  white-space:nowrap;letter-spacing:0.04em;
+  font-size:0.74rem;color:var(--faint);
+  white-space:nowrap;
 }
 .poem-body-wrap{max-height:0;overflow:hidden;transition:max-height .5s ease;}
 .poem-body{
   padding:6px 26px 30px 52px;
-  
-  font-size:1.02rem;
-  line-height:2.4;letter-spacing:0.06em;
+  font-size:1rem;
+  line-height:2.3;letter-spacing:0.01em;
   color:var(--text);
 }
 .poem-body p{margin-bottom:4px;}
-.poem-source{
-  font-family:var(--sans);
-  font-size:0.68rem;color:var(--faint);
-  margin-top:18px;line-height:1.8;
-}
+.poem-source{font-size:0.68rem;color:var(--faint);margin-top:18px;line-height:1.8;}
 
 /* ===== music ===== */
 .track{
@@ -237,7 +241,7 @@ img{max-width:100%;}
   transition:background .2s;
 }
 .track:last-child{border-bottom:1px solid var(--hair);}
-.track:hover{background:rgba(255,255,255,0.025);}
+.track:hover{background:rgba(23,22,19,0.03);}
 .track{position:relative;}
 .track.playing::before{
   content:'';position:absolute;left:-2px;top:14px;bottom:14px;
@@ -246,29 +250,24 @@ img{max-width:100%;}
 .track-cover{
   width:56px;height:56px;flex-shrink:0;
   border-radius:2px;object-fit:cover;display:block;
-  box-shadow:0 4px 12px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.05);
+  box-shadow:0 4px 12px rgba(40,36,26,0.2),0 0 0 1px rgba(23,22,19,0.06);
 }
 .track-play{
   position:absolute;
   width:56px;height:56px;border-radius:2px;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(16,17,19,0.45);
+  background:rgba(23,22,19,0.45);
   color:#fff;font-size:0.9rem;
   opacity:0;transition:opacity .2s;
 }
 .track:hover .track-play{opacity:1;}
-.track.playing .track-play{opacity:1;background:rgba(184,71,46,0.7);}
+.track.playing .track-play{opacity:1;background:rgba(138,111,61,0.85);}
 .track.playing .track-play::after{content:'❚❚';font-size:0.6rem;letter-spacing:2px;}
 .track-meta{flex:1;min-width:0;}
-.track-title{font-size:0.94rem;font-weight:600;color:var(--strong);letter-spacing:0.02em;}
+.track-title{font-size:0.94rem;font-weight:600;color:var(--strong);}
 .track.playing .track-title{color:var(--accent);}
 .track-by{font-size:0.74rem;color:var(--muted);margin-top:1px;}
-.track-bar{
-  height:2px;margin-top:10px;
-  background:var(--hair-dark);
-  cursor:pointer;
-  display:none;
-}
+.track-bar{height:2px;margin-top:10px;background:var(--hair-dark);cursor:pointer;display:none;}
 .track-bar.show{display:block;}
 .track-bar-inner{height:100%;width:0;background:var(--accent);}
 .track-index{
@@ -281,26 +280,25 @@ img{max-width:100%;}
 .note-featured{
   display:block;
   border:1px solid var(--hair);
-  border-top-color:rgba(255,255,255,0.08);
+  border-top-color:rgba(23,22,19,0.1);
   border-left:2px solid var(--accent);
   border-radius:2px;
-  background-image:var(--weave),linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0) 60%);
-  background-color:var(--raise);
-  box-shadow:0 10px 28px rgba(0,0,0,0.3);
+  background:var(--raise);
+  box-shadow:0 10px 28px rgba(40,36,26,0.1);
   padding:26px 30px;
   margin-bottom:24px;
   transition:border-color .25s,box-shadow .25s;
 }
-.note-featured:hover{border-color:var(--hair-dark);border-left-color:var(--accent);box-shadow:0 14px 36px rgba(0,0,0,0.4);}
+.note-featured:hover{border-color:var(--hair-dark);border-left-color:var(--accent);box-shadow:0 14px 36px rgba(40,36,26,0.15);}
 .note-num{
   font-family:var(--mono);
   font-size:0.62rem;letter-spacing:0.18em;
   color:var(--accent);
 }
 .note-title{
-  
+  font-family:var(--head);
   font-size:1.05rem;font-weight:600;
-  letter-spacing:0.04em;
+  letter-spacing:-0.01em;
   color:var(--strong);
   margin-top:8px;line-height:1.6;
 }
@@ -313,39 +311,38 @@ img{max-width:100%;}
 .note-card{
   display:block;
   border:1px solid var(--hair);
-  border-top-color:rgba(255,255,255,0.07);
+  border-top-color:rgba(23,22,19,0.09);
   border-radius:2px;
-  background-image:var(--weave),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0) 70%);
-  background-color:var(--raise);
-  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  background:var(--raise);
+  box-shadow:0 6px 18px rgba(40,36,26,0.08);
   padding:22px 24px 20px;
   transition:border-color .25s,box-shadow .25s;
 }
-.note-card:hover{border-color:var(--hair-dark);box-shadow:0 12px 28px rgba(0,0,0,0.38);}
+.note-card:hover{border-color:var(--hair-dark);box-shadow:0 12px 28px rgba(40,36,26,0.14);}
 .note-card .note-title{font-size:0.94rem;}
 
 /* ===== poetry 留言 ===== */
 .comment-card{
   border:1px solid var(--hair);
-  border-top-color:rgba(255,255,255,0.07);
+  border-top-color:rgba(23,22,19,0.09);
   border-radius:2px;
-  background-image:var(--weave),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0) 70%);
-  background-color:var(--raise);
-  box-shadow:0 8px 24px rgba(0,0,0,0.28);
+  background:var(--raise);
+  box-shadow:0 8px 24px rgba(40,36,26,0.08);
   padding:28px 30px;
   margin-top:44px;
 }
 .comment-card h3{
-  
-  font-size:0.9rem;font-weight:600;
+  font-family:var(--mono);
+  font-size:0.7rem;font-weight:500;
   letter-spacing:0.3em;color:var(--muted);
+  text-transform:uppercase;
   margin-bottom:18px;
 }
 .comment-card input,.comment-card textarea{
   display:block;width:100%;
   padding:9px 14px;margin-bottom:10px;
-  background:var(--ink);
-  box-shadow:inset 0 2px 6px rgba(0,0,0,0.35);
+  background:#fff;
+  box-shadow:inset 0 2px 6px rgba(40,36,26,0.06);
   border:1px solid var(--hair);
   border-radius:2px;
   font-family:var(--sans);
@@ -363,7 +360,7 @@ img{max-width:100%;}
   border:1px solid var(--hair-dark);
   border-radius:2px;
   color:var(--strong);
-  font-family:var(--sans);font-size:0.78rem;letter-spacing:0.3em;
+  font-family:var(--sans);font-size:0.78rem;letter-spacing:0.14em;
   cursor:pointer;transition:border-color .2s,color .2s;
 }
 .cp-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -391,7 +388,7 @@ img{max-width:100%;}
 /* subscribe */
 .sub-btn{
   font-family:var(--sans);
-  font-size:0.74rem;letter-spacing:0.14em;
+  font-size:0.74rem;letter-spacing:0.08em;
   padding:5px 18px;
   background:none;
   border:1px solid var(--hair-dark);
@@ -402,30 +399,25 @@ img{max-width:100%;}
 .sub-btn:hover{border-color:var(--accent);color:var(--accent);}
 .sub-overlay{
   display:none;position:fixed;inset:0;
-  background:rgba(16,17,19,0.55);
+  background:rgba(23,22,19,0.35);
   z-index:100;align-items:center;justify-content:center;
 }
 .sub-overlay.show{display:flex;}
 .sub-box{
-  background-image:var(--noise),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0) 60%);
-  background-color:var(--sheet);
+  background:var(--paper);
   border:1px solid var(--hair-dark);
-  border-top-color:rgba(255,255,255,0.1);
+  border-top-color:rgba(23,22,19,0.12);
   padding:38px 36px 32px;
   max-width:380px;width:90%;
   text-align:center;border-radius:3px;
-  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  box-shadow:0 30px 80px rgba(40,36,26,0.25);
 }
-.sub-box h3{
-  
-  font-size:1.05rem;font-weight:600;letter-spacing:0.12em;
-  color:var(--strong);margin-bottom:6px;
-}
+.sub-box h3{font-family:var(--head);font-size:1.05rem;font-weight:600;color:var(--strong);margin-bottom:6px;}
 .sub-box p{font-size:0.78rem;color:var(--muted);margin-bottom:22px;}
 .sub-box input{
   display:block;width:100%;
   padding:10px 14px;margin-bottom:10px;
-  background:var(--ink);
+  background:#fff;
   border:1px solid var(--hair);border-radius:2px;
   font-family:var(--sans);font-size:0.8rem;color:var(--text);
   outline:none;text-align:center;
@@ -436,7 +428,7 @@ img{max-width:100%;}
 .sub-box .sub-go{
   padding:7px 28px;margin-top:6px;
   background:none;border:1px solid var(--hair-dark);border-radius:2px;
-  color:var(--strong);font-family:var(--sans);font-size:0.78rem;letter-spacing:0.2em;
+  color:var(--strong);font-family:var(--sans);font-size:0.78rem;letter-spacing:0.12em;
   cursor:pointer;transition:border-color .2s,color .2s;
 }
 .sub-box .sub-go:hover{border-color:var(--accent);color:var(--accent);}
@@ -447,7 +439,6 @@ img{max-width:100%;}
 }
 .sub-close:hover{color:var(--muted);}
 
-/* 动效尊重系统设置 */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;}
 }
@@ -468,16 +459,26 @@ img{max-width:100%;}
 </head>
 <body>
 
-<div class="bg-veil"></div>
+<!-- 扉页：流场粒子 -->
+<div id="gate">
+  <canvas id="flow"></canvas>
+  <div class="gate-title">
+    <h1>Haoze Li</h1>
+    <p>Click to visit</p>
+  </div>
+</div>
+
+<!-- 正站背景 -->
+<div class="bg"></div>
 
 <header class="site-header">
   <div class="header-inner">
     <a class="site-title">Simon<em>blog.haozeli.cn</em></a>
     <nav class="nav">
-      <a class="active" data-nav="daily">日常</a>
-      <a data-nav="poetry">诗歌</a>
-      <a data-nav="music">音乐</a>
-      <a data-nav="academic">学术</a>
+      <a class="active" data-nav="daily">Daily</a>
+      <a data-nav="poetry">Poetry</a>
+      <a data-nav="music">Music</a>
+      <a data-nav="academic">Notes</a>
     </nav>
   </div>
 </header>
@@ -486,41 +487,41 @@ img{max-width:100%;}
 
 <div class="wrap">
 
-  <!-- 日常 -->
+  <!-- Daily -->
   <section class="section active" id="sect-daily">
     <div class="section-head">
-      <h1 class="section-label">日常</h1>
-      <span class="section-cap">Daily</span>
+      <h1 class="section-label">Daily</h1>
+      <span class="section-cap">Everyday Life</span>
     </div>
-    <div class="section-intro" style="margin:-24px 0 40px;">一些小事，往下滑动浏览往期动态。</div>
+    <div class="section-intro" style="margin:-24px 0 40px;">Small things. Scroll down for past updates.</div>
 
     <article class="entry">
       <div class="entry-date">2026.07.21 · 23:52</div>
       <div class="entry-body">
         <img loading="lazy" src="1e7cf129c33ed133ced0b012fec28b31.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
-        <p>变成2和4之后还会更小吗</p>
+        <p>After turning into a 2 and a 4, can it get any smaller?</p>
         <div class="entry-divider"></div>
         <img loading="lazy" src="34e552c8500b2c8897b58aa3a701f637.jpg" alt="" style="max-width:320px;margin-bottom:10px;">
-        <p>四人小队3小时艰难通过教学关</p>
+        <p>Four players, three brutal hours to clear the tutorial.</p>
       </div>
     </article>
 
     <article class="entry">
       <div class="entry-date">2026.06.12 · 13:50</div>
       <div class="entry-body">
-        <p>为啥提前一个月复习都复习不完啊···本质笨蛋··</p>
+        <p>Why can't I finish revising even with a month head start… hopeless idiot…</p>
       </div>
     </article>
 
     <article class="entry">
       <div class="entry-date">2026.06.09 · 13:27</div>
       <div class="entry-body">
-        <p>分享一些最近看到的 AI 图，我印象里只在新疆青海一带看到过类似的。</p>
+        <p>Sharing some AI images I've come across lately — the only places I remember seeing landscapes like these are Xinjiang and Qinghai.</p>
         <div class="entry-gallery">
           <img loading="lazy" src="截屏2026-06-09 13.13.06.png" alt="">
           <img loading="lazy" src="6d0949eaa80fa888ae1d2cc50b0aff673546894196280100.jpg" alt="">
         </div>
-        <p>这张在坎特伯雷拍摄的照片也很符合我的想象，只可惜当时山脉冰川大都融化了。</p>
+        <p>This photo taken in Canterbury also matches my imagination — a pity most of the glaciers on those mountains had already melted.</p>
         <img loading="lazy" src="56fa17073ce024252b593e74698a5a68.jpg" alt="" style="max-width:380px;margin-top:12px;">
       </div>
     </article>
@@ -528,36 +529,36 @@ img{max-width:100%;}
     <article class="entry">
       <div class="entry-date">2026.06.07 · 16:48</div>
       <div class="entry-body">
-        <p style="margin-bottom:12px;">你们好！</p>
+        <p style="margin-bottom:12px;">Hello, everyone!</p>
         <img loading="lazy" src="daily-01.jpg" alt="" style="max-width:300px;">
       </div>
     </article>
   </section>
 
-  <!-- 诗歌 -->
+  <!-- Poetry -->
   <section class="section" id="sect-poetry">
     <div class="section-head">
-      <h1 class="section-label">诗歌</h1>
-      <span class="section-cap">Poetry</span>
+      <h1 class="section-label">Poetry</h1>
+      <span class="section-cap">Currently Reading</span>
     </div>
-    <div class="section-intro" style="margin:-24px 0 40px;">正在读诗，点击展开全文。</div>
+    <div class="section-intro" style="margin:-24px 0 40px;">Poems I'm reading. Click to expand.</div>
 
     <article class="poem">
       <div class="poem-head" onclick="togglePoem(this)">
         <span class="poem-toggle">+</span>
-        <span class="poem-title">雲雀料理</span>
-        <span class="poem-author">萩原朔太郎 · 《月に吠える》1917 · 小椿山 译</span>
+        <span class="poem-title">Skylark Ragout</span>
+        <span class="poem-author">Hagiwara Sakutarō · Howling at the Moon, 1917</span>
       </div>
       <div class="poem-body-wrap">
         <div class="poem-body">
-          <p>如献上祭品般献上夜晚的爱筵，</p>
-          <p>蜡烛被鱼脂熏染上阴郁，</p>
-          <p>我决心推开那扇可爱的绿窗户。</p>
-          <p>啊，看一看天空，</p>
-          <p>将五月遥远之地流动的东西，</p>
-          <p>捧上我手中盛着云雀的餐盘，</p>
-          <p>而可爱的你决心向左边走去。</p>
-          <div class="poem-source">*agape，初期基督教徒的会餐。选自《吠月：萩原朔太郎诗集》，明室Lucida丨北京联合出版公司，2021</div>
+          <p>Offering the night's love-feast like a sacrifice,</p>
+          <p>the candles tinged with gloom by fish-fat smoke,</p>
+          <p>I resolve to push open that lovely green window.</p>
+          <p>Ah, look at the sky —</p>
+          <p>lift what drifts in the far distance of May</p>
+          <p>onto the plate in my hands that holds a skylark,</p>
+          <p>while lovely you resolve to walk off to the left.</p>
+          <div class="poem-source">*agape: the communal meal of the early Christians. From Howling at the Moon by Hagiwara Sakutarō.</div>
         </div>
       </div>
     </article>
@@ -565,22 +566,22 @@ img{max-width:100%;}
     <article class="poem">
       <div class="poem-head" onclick="togglePoem(this)">
         <span class="poem-toggle">+</span>
-        <span class="poem-title">九月</span>
-        <span class="poem-author">海子 · 1986</span>
+        <span class="poem-title">September</span>
+        <span class="poem-author">Haizi · 1986</span>
       </div>
       <div class="poem-body-wrap">
         <div class="poem-body">
-          <p>目击众神死亡的草原上野花一片</p>
-          <p>远在远方的风比远方更远</p>
-          <p>我的琴声呜咽 泪水全无</p>
-          <p>我把这远方的远归还草原</p>
-          <p>一个叫木头 一个叫马尾</p>
-          <p>我的琴声呜咽 泪水全无</p>
-          <p>远方只有在死亡中凝聚野花一片</p>
-          <p>明月如镜高悬草原映照千年岁月</p>
-          <p>我的琴声呜咽 泪水全无</p>
-          <p>只身打马过草原</p>
-          <div class="poem-source">选自《海子的诗》，人民文学出版社，1999</div>
+          <p>On the grassland where the gods died, wildflowers bloom for miles</p>
+          <p>the wind in the far distance is farther than the far away</p>
+          <p>my qin sobs, my tears run dry</p>
+          <p>I return the distance's distance to the grassland</p>
+          <p>one called Wood, one called Ponytail</p>
+          <p>my qin sobs, my tears run dry</p>
+          <p>the distance gathers its wildflowers only in death</p>
+          <p>the bright moon hangs like a mirror over the grassland, reflecting a thousand years</p>
+          <p>my qin sobs, my tears run dry</p>
+          <p>alone I ride past the grassland</p>
+          <div class="poem-source">From The Poems of Haizi, People's Literature Publishing House, 1999.</div>
         </div>
       </div>
     </article>
@@ -588,45 +589,45 @@ img{max-width:100%;}
     <article class="poem">
       <div class="poem-head" onclick="togglePoem(this)">
         <span class="poem-toggle">+</span>
-        <span class="poem-title">镜中</span>
-        <span class="poem-author">张枣 · 1984</span>
+        <span class="poem-title">In the Mirror</span>
+        <span class="poem-author">Zhang Zao · 1984</span>
       </div>
       <div class="poem-body-wrap">
         <div class="poem-body">
-          <p>只要想起一生中后悔的事</p>
-          <p>梅花便落了下来</p>
-          <p>比如看她游泳到河的另一岸</p>
-          <p>比如登上一株松木梯子</p>
-          <p>危险的事固然美丽</p>
-          <p>不如看她骑马归来</p>
-          <p>面颊温暖</p>
-          <p>羞惭。低下头，回答着皇帝</p>
-          <p>一面镜子永远等候她</p>
-          <p>让她坐到镜中常坐的地方</p>
-          <p>望着窗外，只要想起一生中后悔的事</p>
-          <p>梅花便落满了南山</p>
-          <div class="poem-source">选自《张枣的诗》，人民文学出版社，2017</div>
+          <p>Whenever I recall the regrets of a lifetime</p>
+          <p>plum blossoms fall</p>
+          <p>like watching her swim to the other bank</p>
+          <p>like climbing a pine-wood ladder</p>
+          <p>dangerous things are beautiful, after all</p>
+          <p>better to watch her come home on horseback</p>
+          <p>cheeks warm</p>
+          <p>blushing. Head lowered, answering the Emperor</p>
+          <p>a mirror waits for her, forever</p>
+          <p>lets her sit where she always sat in the mirror</p>
+          <p>looking out the window — whenever I recall the regrets of a lifetime</p>
+          <p>plum blossoms cover the southern mountain</p>
+          <div class="poem-source">From The Poems of Zhang Zao, People's Literature Publishing House, 2017.</div>
         </div>
       </div>
     </article>
 
     <div class="comment-card" id="poetry-comments">
-      <h3>留言</h3>
-      <input type="text" id="cf-nickname" placeholder="昵称" maxlength="20">
-      <textarea id="cf-content" placeholder="诗名或诗句……" maxlength="300"></textarea>
-      <button class="cp-btn" onclick="addComment()">留言</button>
+      <h3>Leave a Note</h3>
+      <input type="text" id="cf-nickname" placeholder="Name" maxlength="20">
+      <textarea id="cf-content" placeholder="A poem, or a line you loved…" maxlength="300"></textarea>
+      <button class="cp-btn" onclick="addComment()">Send</button>
       <div class="cp-msg" id="cf-msg"></div>
       <div id="comment-list"></div>
     </div>
   </section>
 
-  <!-- 音乐 -->
+  <!-- Music -->
   <section class="section" id="sect-music">
     <div class="section-head">
-      <h1 class="section-label">音乐</h1>
-      <span class="section-cap">Music</span>
+      <h1 class="section-label">Music</h1>
+      <span class="section-cap">On Repeat</span>
     </div>
-    <div class="section-intro" style="margin:-24px 0 40px;">欢迎来听，点击播放。</div>
+    <div class="section-intro" style="margin:-24px 0 40px;">Come and listen. Click to play.</div>
 
     <audio id="player" preload="none"></audio>
 
@@ -636,7 +637,7 @@ img{max-width:100%;}
         <span class="track-play">▶</span>
         <div class="track-meta">
           <div class="track-title">Make-up Shadow</div>
-          <div class="track-by">井上陽水</div>
+          <div class="track-by">Inoue Yousui</div>
           <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
         <span class="track-index">01</span>
@@ -645,8 +646,8 @@ img{max-width:100%;}
         <img loading="lazy" src="arrietty.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
-          <div class="track-title">亚莉亚蒂之歌</div>
-          <div class="track-by">G.E.M. 邓紫棋</div>
+          <div class="track-title">Song of Arrietty</div>
+          <div class="track-by">G.E.M.</div>
           <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
         <span class="track-index">02</span>
@@ -665,8 +666,8 @@ img{max-width:100%;}
         <img loading="lazy" src="therru.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
-          <div class="track-title">テルーの唄</div>
-          <div class="track-by">手嶌葵</div>
+          <div class="track-title">Thérèse's Song</div>
+          <div class="track-by">Teshima Aoi</div>
           <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
         <span class="track-index">04</span>
@@ -675,7 +676,7 @@ img{max-width:100%;}
         <img loading="lazy" src="nanoka.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
-          <div class="track-title">七ノ歌</div>
+          <div class="track-title">Nanoka</div>
           <div class="track-by">RADWIMPS</div>
           <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
@@ -685,8 +686,8 @@ img{max-width:100%;}
         <img loading="lazy" src="kai.jpg" alt="" class="track-cover">
         <span class="track-play">▶</span>
         <div class="track-meta">
-          <div class="track-title">櫂</div>
-          <div class="track-by">ヨルシカ</div>
+          <div class="track-title">Kai</div>
+          <div class="track-by">Yorushika</div>
           <div class="track-bar"><div class="track-bar-inner"></div></div>
         </div>
         <span class="track-index">06</span>
@@ -694,45 +695,45 @@ img{max-width:100%;}
     </div>
   </section>
 
-  <!-- 学术 -->
+  <!-- Notes -->
   <section class="section" id="sect-academic">
     <div class="section-head">
-      <h1 class="section-label">学术</h1>
-      <span class="section-cap">Notes</span>
+      <h1 class="section-label">Notes</h1>
+      <span class="section-cap">Course Notes</span>
     </div>
-    <div class="section-intro" style="margin:-24px 0 40px;">加油。</div>
+    <div class="section-intro" style="margin:-24px 0 40px;">Keep going.</div>
 
     <a class="note-featured" href="notes/Lecture_11_Notes_v2.pdf" target="_blank">
       <div class="note-num">LECTURE 11 · PINNED</div>
-      <div class="note-title">边界层基础</div>
-      <div class="note-sub">Blasius 精确解 · 动量积分方程 · 近似剖面</div>
+      <div class="note-title">Boundary Layer Fundamentals</div>
+      <div class="note-sub">Blasius exact solution · Momentum integral equation · Approximate profiles</div>
     </a>
 
     <div class="notes-grid">
       <a class="note-card" href="notes/Lecture_7_Notes.pdf" target="_blank">
         <div class="note-num">LECTURE 07</div>
-        <div class="note-title">流体运动的微分分析导论</div>
-        <div class="note-sub">连续性方程 · 流函数 · N-S 方程推导</div>
+        <div class="note-title">Introduction to Differential Analysis of Fluid Motion</div>
+        <div class="note-sub">Continuity equation · Stream function · Deriving the N-S equations</div>
       </a>
       <a class="note-card" href="notes/Lecture_8_Notes.pdf" target="_blank">
         <div class="note-num">LECTURE 08</div>
-        <div class="note-title">不可压缩无粘流动</div>
-        <div class="note-sub">Bernoulli 方程 · Euler 方程 · 总压与静压</div>
+        <div class="note-title">Incompressible Inviscid Flow</div>
+        <div class="note-sub">Bernoulli equation · Euler equation · Total and static pressure</div>
       </a>
       <a class="note-card" href="notes/Lecture_9_Notes.pdf" target="_blank">
         <div class="note-num">LECTURE 09</div>
-        <div class="note-title">量纲分析与相似性</div>
-        <div class="note-sub">Buckingham Π 定理 · 雷诺数 · 模型试验</div>
+        <div class="note-title">Dimensional Analysis and Similarity</div>
+        <div class="note-sub">Buckingham Π theorem · Reynolds number · Model testing</div>
       </a>
       <a class="note-card" href="notes/Lecture_10_Notes.pdf" target="_blank">
         <div class="note-num">LECTURE 10</div>
-        <div class="note-title">充分发展层流与流量测量</div>
-        <div class="note-sub">Hagen-Poiseuille 定律 · Couette 流 · 流量计</div>
+        <div class="note-title">Fully Developed Laminar Flow & Flow Measurement</div>
+        <div class="note-sub">Hagen-Poiseuille law · Couette flow · Flowmeters</div>
       </a>
       <a class="note-card" href="notes/Lecture_12_Notes.pdf" target="_blank">
         <div class="note-num">LECTURE 12</div>
-        <div class="note-title">地球物理流体力学导论</div>
-        <div class="note-sub">科里奥利力 · 旋转参考系 · 角动量守恒</div>
+        <div class="note-title">Introduction to Geophysical Fluid Dynamics</div>
+        <div class="note-sub">Coriolis force · Rotating reference frames · Angular momentum conservation</div>
       </a>
     </div>
   </section>
@@ -750,7 +751,7 @@ img{max-width:100%;}
       <svg viewBox="0 0 16 16"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1.5 2.5c5.523 0 10 4.477 10 10a1 1 0 1 1-2 0 8 8 0 0 0-8-8 1 1 0 0 1 0-2zm0 4A6 6 0 0 1 13.5 12.5a1 1 0 1 1-2 0 4 4 0 0 0-4-4 1 1 0 0 1 0-2zm.5 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
       RSS
     </a>
-    <button class="sub-btn" onclick="openSub()">订阅</button>
+    <button class="sub-btn" onclick="openSub()">Subscribe</button>
   </div>
 </footer>
 
@@ -759,34 +760,82 @@ img{max-width:100%;}
 <!-- subscribe overlay -->
 <div class="sub-overlay" id="sub-overlay" onclick="if(event.target===this)closeSub()">
   <div class="sub-box">
-    <h3>邮件订阅</h3>
-    <p>更新后我会发邮件告诉你。</p>
-    <input type="email" id="sub-email" placeholder="你的邮箱" maxlength="60">
-    <button class="sub-go" onclick="doSubscribe()">确认</button>
+    <h3>Newsletter</h3>
+    <p>I'll email you when something new is up.</p>
+    <input type="email" id="sub-email" placeholder="Your email" maxlength="60">
+    <button class="sub-go" onclick="doSubscribe()">Confirm</button>
     <div class="sub-msg" id="sub-msg"></div>
-    <button class="sub-close" onclick="closeSub()">以后再说</button>
+    <button class="sub-close" onclick="closeSub()">Maybe later</button>
   </div>
 </div>
 
 <script>
+// ===== 扉页：流场粒子（黑色粒子 · 白底）=====
+(function(){
+  var gate=document.getElementById('gate');
+  var c=document.getElementById('flow');
+  var ctx=c.getContext('2d');
+  var reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var W,H,pts=[],raf,t=0,running=false;
+  var N=innerWidth<600?1400:3200;
+
+  function fit(){
+    var dpr=Math.min(devicePixelRatio||1,2);
+    W=innerWidth;H=innerHeight;
+    c.width=W*dpr;c.height=H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function seed(){
+    pts=[];
+    for(var i=0;i<N;i++)pts.push({x:Math.random()*W,y:Math.random()*H});
+    ctx.fillStyle='#fbfaf7';ctx.fillRect(0,0,W,H);
+  }
+  function field(x,y){
+    return Math.sin(x*0.0021+t*0.0004)+Math.cos(y*0.0017-t*0.0003)
+         + Math.sin((x+y)*0.0009+t*0.0002);
+  }
+  function step(){
+    if(!running)return;
+    t+=16;
+    ctx.fillStyle='rgba(251,250,247,0.05)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(20,20,22,0.4)';
+    for(var i=0;i<N;i++){
+      var p=pts[i];
+      var a=field(p.x,p.y)*Math.PI;
+      p.x+=Math.cos(a)*0.9;p.y+=Math.sin(a)*0.9;
+      ctx.fillRect(p.x,p.y,1,1);
+      if(p.x<0||p.x>W||p.y<0||p.y>H){p.x=Math.random()*W;p.y=Math.random()*H}
+    }
+    raf=requestAnimationFrame(step);
+  }
+  fit();seed();
+  if(reduced){
+    for(var k=0;k<500;k++){t+=16;
+      ctx.fillStyle='rgba(251,250,247,0.05)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='rgba(20,20,22,0.4)';
+      for(var j=0;j<N;j++){var p=pts[j];var a=field(p.x,p.y)*Math.PI;
+        p.x+=Math.cos(a)*0.9;p.y+=Math.sin(a)*0.9;ctx.fillRect(p.x,p.y,1,1);}
+    }
+  }else{
+    running=true;step();
+    document.addEventListener('visibilitychange',function(){
+      if(gate.classList.contains('gone'))return;
+      document.hidden?(running=false,cancelAnimationFrame(raf)):(running=true,step());
+    });
+    var _rt;
+    addEventListener('resize',function(){clearTimeout(_rt);_rt=setTimeout(function(){fit();seed();},150);});
+  }
+
+  // 点击扉页 → 淡出，进入正站
+  gate.addEventListener('click',function(){
+    gate.classList.add('gone');
+    running=false;cancelAnimationFrame(raf);
+    setTimeout(function(){gate.style.display='none';},1100);
+  },{once:true});
+})();
+
 // 图片异步解码，滚动更顺
 document.querySelectorAll('img').forEach(function(i){i.decoding='async';});
-
-// 背景轻微视差（触屏和减弱动效时关闭）
-var bgLayer=document.querySelector('.bg-veil');
-var fineMotion=window.matchMedia('(pointer:fine)').matches && !window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-if(bgLayer && fineMotion){
-  var _raf=null;
-  window.addEventListener('mousemove',function(e){
-    if(_raf) return;
-    _raf=requestAnimationFrame(function(){
-      var dx=(e.clientX/window.innerWidth-0.5)*-14;
-      var dy=(e.clientY/window.innerHeight-0.5)*-10;
-      bgLayer.style.transform='translate3d('+dx+'px,'+dy+'px,0)';
-      _raf=null;
-    });
-  },{passive:true});
-}
 
 var _pendingSwitch=null;
 function switchSection(name){
@@ -873,16 +922,16 @@ document.addEventListener('keydown',function(e){
 function doSubscribe(){
   var email=document.getElementById('sub-email').value.trim();
   var msg=document.getElementById('sub-msg');
-  if(!email||!/@/.test(email)){msg.textContent='请输入有效邮箱。';return;}
-  msg.textContent='提交中……';
+  if(!email||!/@/.test(email)){msg.textContent='Please enter a valid email.';return;}
+  msg.textContent='Subscribing…';
   fetch('https://cmrcjbhanwzqriwkvpof.supabase.co/rest/v1/Subscribers',{
     method:'POST',
     headers:{'apikey':'sb_publishable_jXRJy1km3NkcmEX8ocQXXg_i9Jb1fp2','Authorization':'Bearer sb_publishable_jXRJy1km3NkcmEX8ocQXXg_i9Jb1fp2','Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({email:email})
   }).then(function(r){
-    if(r.ok){msg.textContent='订阅成功！';document.getElementById('sub-email').value='';}
-    else{msg.textContent='可能已订阅过。';}
-  }).catch(function(){msg.textContent='网络错误，再试一次。';});
+    if(r.ok){msg.textContent='Subscribed!';document.getElementById('sub-email').value='';}
+    else{msg.textContent='You may already be subscribed.';}
+  }).catch(function(){msg.textContent='Network error, try again.';});
 }
 
 // Comments (Supabase)
@@ -898,7 +947,7 @@ function loadComments(){
   }).then(function(r){return r.json();})
     .then(function(data){
       if(data.error){l.innerHTML='<div class="cp-empty">'+data.message+'</div>';return;}
-      if(!data.length){l.innerHTML='<div class="cp-empty">还没有留言。</div>';return;}
+      if(!data.length){l.innerHTML='<div class="cp-empty">No notes yet.</div>';return;}
       var h='';
       for(var i=0;i<data.length;i++){
         var c=data[i];
@@ -908,26 +957,26 @@ function loadComments(){
       }
       l.innerHTML=h;
     })
-    .catch(function(e){l.innerHTML='<div class="cp-empty">加载失败：'+e.message+'</div>';});
+    .catch(function(e){l.innerHTML='<div class="cp-empty">Failed to load: '+e.message+'</div>';});
 }
 function addComment(){
   var n=document.getElementById('cf-nickname').value.trim();
   var t=document.getElementById('cf-content').value.trim();
   var m=document.getElementById('cf-msg');
-  if(!n){m.textContent='请填昵称。';return;}
-  if(!t){m.textContent='请填内容。';return;}
-  m.textContent='发送中……';
+  if(!n){m.textContent='Please enter your name.';return;}
+  if(!t){m.textContent='Please write something.';return;}
+  m.textContent='Sending…';
   fetch(SB_URL+'/rest/v1/'+SB_TABLE,{
     method:'POST',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({nickname:n,content:t})
   }).then(function(){
-    m.textContent='已留言。';
+    m.textContent='Posted.';
     document.getElementById('cf-nickname').value='';
     document.getElementById('cf-content').value='';
     setTimeout(loadComments,200);
     setTimeout(function(){m.textContent='';},2000);
-  }).catch(function(err){m.textContent='发送失败：'+err.message;});
+  }).catch(function(err){m.textContent='Failed: '+err.message;});
 }
 
 // 导航点击切换
