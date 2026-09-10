@@ -7,7 +7,7 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ===== tokens ===== */
 :root{
@@ -22,7 +22,7 @@
   --faint:#a09c92;
   --accent:#8a6f3d;
   --accent-dim:rgba(138,111,61,0.12);
-  --head:"Inter Tight","Inter",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  --head:"Geist","Inter Tight","Inter",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   --mono:"SF Mono","Menlo",monospace;
   --sans:"Inter",-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif;
 }
@@ -114,10 +114,10 @@ img{max-width:100%;}
   margin-bottom:24px;
 }
 .hero p{font-size:1.02rem;color:var(--muted);max-width:52ch;margin-bottom:32px;}
-.hero-links{display:flex;gap:26px;flex-wrap:wrap;}
+.hero-links{display:flex;gap:30px;flex-wrap:wrap;margin-bottom:72px;}
 .hero-links a{
   font-family:var(--mono);
-  font-size:0.76rem;letter-spacing:0.1em;
+  font-size:0.92rem;letter-spacing:0.08em;
   color:var(--text);
   cursor:pointer;
   transition:color .2s;
@@ -454,9 +454,6 @@ img{max-width:100%;}
 
   <!-- hero -->
   <header class="hero">
-    <div class="hero-kicker">Hello, my name is</div>
-    <h1>Haoze Li.</h1>
-    <p>I study fluid dynamics, read poems, collect songs, and write down small things here. Scroll down, or jump straight to a section.</p>
     <div class="hero-links">
       <a data-sect="daily">Daily<span class="arr">↗</span></a>
       <a data-sect="poetry">Poetry<span class="arr">↗</span></a>
@@ -464,6 +461,9 @@ img{max-width:100%;}
       <a data-sect="notes">Notes<span class="arr">↗</span></a>
       <a href="https://github.com/" target="_blank" rel="noopener">GitHub<span class="arr">↗</span></a>
     </div>
+    <div class="hero-kicker">Hello, my name is</div>
+    <h1>Haoze Li.</h1>
+    <p>A Musician, Scientist, INFP.</p>
   </header>
 
   <!-- Daily -->
