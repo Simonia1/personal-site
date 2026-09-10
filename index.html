@@ -96,24 +96,6 @@ img{max-width:100%;}
 }
 
 /* hero */
-.hero{margin-bottom:96px;}
-.hero-kicker{
-  font-family:var(--mono);
-  font-size:0.72rem;letter-spacing:0.25em;
-  text-transform:uppercase;
-  color:var(--accent);
-  margin-bottom:20px;
-}
-.hero h1{
-  font-family:var(--head);
-  font-size:clamp(2.4rem,6vw,3.4rem);
-  font-weight:700;
-  letter-spacing:-0.025em;
-  line-height:1.15;
-  color:var(--strong);
-  margin-bottom:24px;
-}
-.hero p{font-size:1.02rem;color:var(--muted);max-width:52ch;margin-bottom:32px;}
 .hero-links{display:flex;gap:30px;flex-wrap:wrap;margin-bottom:72px;}
 .hero-links a{
   font-family:var(--mono);
@@ -131,6 +113,27 @@ img{max-width:100%;}
   transition:transform .2s;
 }
 .hero-links a:hover .arr{transform:translate(1px,-1px);}
+
+/* 首页介绍块 */
+.home-hero{margin-bottom:96px;}
+.home-hero.hide{display:none;}
+.home-hero .hero-kicker{
+  font-family:var(--mono);
+  font-size:0.72rem;letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:20px;
+}
+.home-hero h1{
+  font-family:var(--head);
+  font-size:clamp(2.4rem,6vw,3.4rem);
+  font-weight:700;
+  letter-spacing:-0.025em;
+  line-height:1.15;
+  color:var(--strong);
+  margin-bottom:24px;
+}
+.home-hero p{font-size:1.02rem;color:var(--muted);}
 
 /* 板块页：默认隐藏，点击导航进入 */
 .sect{display:none;}
@@ -452,19 +455,21 @@ img{max-width:100%;}
 
 <div class="col">
 
-  <!-- hero -->
-  <header class="hero">
-    <div class="hero-links">
-      <a data-sect="daily">Daily<span class="arr">↗</span></a>
-      <a data-sect="poetry">Poetry<span class="arr">↗</span></a>
-      <a data-sect="music">Music<span class="arr">↗</span></a>
-      <a data-sect="notes">Notes<span class="arr">↗</span></a>
-      <a href="https://github.com/" target="_blank" rel="noopener">GitHub<span class="arr">↗</span></a>
-    </div>
+  <!-- 顶部板块导航（随页面滚动） -->
+  <nav class="hero-links">
+    <a data-sect="daily">Daily<span class="arr">↗</span></a>
+    <a data-sect="poetry">Poetry<span class="arr">↗</span></a>
+    <a data-sect="music">Music<span class="arr">↗</span></a>
+    <a data-sect="notes">Notes<span class="arr">↗</span></a>
+    <a href="https://github.com/" target="_blank" rel="noopener">GitHub<span class="arr">↗</span></a>
+  </nav>
+
+  <!-- 首页介绍（仅首页显示） -->
+  <div class="home-hero" id="home-hero">
     <div class="hero-kicker">Hello, my name is</div>
     <h1>Haoze Li.</h1>
     <p>A Musician, Scientist, INFP.</p>
-  </header>
+  </div>
 
   <!-- Daily -->
   <section class="sect" id="daily">
@@ -932,19 +937,33 @@ function switchSection(name){
   document.querySelectorAll('.hero-links a[data-sect]').forEach(function(a){
     a.classList.toggle('active', a.dataset.sect === name);
   });
+  document.getElementById('home-hero').classList.toggle('hide', !!name);
   document.querySelectorAll('.sect').forEach(function(s){
-    s.classList.toggle('on', s.id === name);
+    s.classList.toggle('on', !!name && s.id === name);
   });
   window.scrollTo(0,0);
+  setTimeout(function(){window.scrollTo(0,0);},0);
 }
+function goHome(){
+  switchSection(null);
+  history.replaceState(null, '', window.location.pathname);
+}
+// 点击标题回首页
+document.querySelector('.site-title')?.addEventListener('click', goHome);
 document.querySelectorAll('.hero-links a[data-sect]').forEach(function(a){
   a.addEventListener('click', function(e){
     e.preventDefault();
-    switchSection(a.dataset.sect);
-    history.replaceState(null, '', '#' + a.dataset.sect);
+    var goingHome = a.classList.contains('active');
+    if(goingHome){
+      goHome();
+    } else {
+      switchSection(a.dataset.sect);
+      history.replaceState(null, '', '#' + a.dataset.sect);
+    }
   });
 });
 // Deep link: #daily / #poetry / #music / #notes
+history.scrollRestoration = 'manual';
 var initial = (window.location.hash || '').replace('#','');
 if(['daily','poetry','music','notes'].indexOf(initial) > -1) switchSection(initial);
 
