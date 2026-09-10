@@ -27,7 +27,7 @@
   --sans:"Inter",-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:17px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+html{font-size:17px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
 body{
   background:var(--bg);
   color:var(--text);
@@ -85,14 +85,14 @@ img{max-width:100%;}
 
 /* ===== 中央窄栏： victoreke 式单页 ===== */
 .col{
-  max-width:640px;
+  max-width:880px;
   margin:0 auto;
   min-height:100vh;
   background:var(--paper);
   border-left:1px solid var(--hair);
   border-right:1px solid var(--hair);
   box-shadow:0 24px 90px rgba(40,36,26,0.18);
-  padding:96px 56px 64px;
+  padding:96px 72px 64px;
 }
 
 /* hero */
@@ -113,17 +113,28 @@ img{max-width:100%;}
   color:var(--strong);
   margin-bottom:24px;
 }
-.hero p{font-size:1.02rem;color:var(--muted);max-width:46ch;margin-bottom:32px;}
-.hero-links{display:flex;gap:28px;flex-wrap:wrap;}
+.hero p{font-size:1.02rem;color:var(--muted);max-width:52ch;margin-bottom:32px;}
+.hero-links{display:flex;gap:26px;flex-wrap:wrap;}
 .hero-links a{
   font-family:var(--mono);
   font-size:0.76rem;letter-spacing:0.1em;
   color:var(--text);
+  cursor:pointer;
   transition:color .2s;
 }
 .hero-links a:hover{color:var(--accent);}
+.hero-links a.active{color:var(--accent);}
+.hero-links .arr{
+  font-size:0.62em;
+  vertical-align:0.5em;
+  margin-left:2px;
+  transition:transform .2s;
+}
+.hero-links a:hover .arr{transform:translate(1px,-1px);}
 
-/* section（victoreke 式编号标题） */
+/* 板块页：默认隐藏，点击导航进入 */
+.sect{display:none;}
+.sect.on{display:block;animation:rise .45s cubic-bezier(.22,.61,.36,1) both;}
 .sect{margin-bottom:110px;}
 .sect-head{margin-bottom:44px;}
 .sect-num{
@@ -447,11 +458,11 @@ img{max-width:100%;}
     <h1>Haoze Li.</h1>
     <p>I study fluid dynamics, read poems, collect songs, and write down small things here. Scroll down, or jump straight to a section.</p>
     <div class="hero-links">
-      <a href="#daily">Daily</a>
-      <a href="#poetry">Poetry</a>
-      <a href="#music">Music</a>
-      <a href="#notes">Notes</a>
-      <a href="https://github.com/" target="_blank" rel="noopener">GitHub ↗</a>
+      <a data-sect="daily">Daily<span class="arr">↗</span></a>
+      <a data-sect="poetry">Poetry<span class="arr">↗</span></a>
+      <a data-sect="music">Music<span class="arr">↗</span></a>
+      <a data-sect="notes">Notes<span class="arr">↗</span></a>
+      <a href="https://github.com/" target="_blank" rel="noopener">GitHub<span class="arr">↗</span></a>
     </div>
   </header>
 
@@ -915,6 +926,27 @@ function addComment(){
   }).catch(function(err){m.textContent='Failed: '+err.message;});
 }
 loadComments();
+
+// 板块切换：首页只有介绍，点击上方链接进入板块
+function switchSection(name){
+  document.querySelectorAll('.hero-links a[data-sect]').forEach(function(a){
+    a.classList.toggle('active', a.dataset.sect === name);
+  });
+  document.querySelectorAll('.sect').forEach(function(s){
+    s.classList.toggle('on', s.id === name);
+  });
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.hero-links a[data-sect]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    switchSection(a.dataset.sect);
+    history.replaceState(null, '', '#' + a.dataset.sect);
+  });
+});
+// Deep link: #daily / #poetry / #music / #notes
+var initial = (window.location.hash || '').replace('#','');
+if(['daily','poetry','music','notes'].indexOf(initial) > -1) switchSection(initial);
 
 // Track visit
 fetch(SB_URL+'/rest/v1/Visits',{
